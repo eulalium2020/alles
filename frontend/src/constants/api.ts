@@ -22,6 +22,7 @@ export const API_CONFIG = {
     },
     PROFISSIONAIS: '/profissionais',
     PACIENTES: '/pacientes',
+    PLANOS_SAUDE: '/planos-saude',
     ATENDIMENTOS: '/atendimentos',
     PAGAMENTOS: '/pagamentos',
     RELATORIOS: '/relatorios',

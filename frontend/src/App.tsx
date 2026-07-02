@@ -10,6 +10,7 @@ import { DashboardPage } from '@pages/DashboardPage'
 import { ProfissionaisPage } from '@pages/ProfissionaisPage'
 import { PacientesPage } from '@pages/PacientesPage'
 import { AtendimentosPage } from '@pages/AtendimentosPage'
+import { PlanosSaudePage } from '@pages/PlanosSaudePage'
 import { MainLayout } from '@layouts/MainLayout'
 import { useIsAuthenticated } from '@store/authStore'
 import './index.css'
@@ -85,6 +86,15 @@ function App() {
           element={
             <ProtectedRoute>
               <AtendimentosPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/planos-saude"
+          element={
+            <ProtectedRoute>
+              <PlanosSaudePage />
             </ProtectedRoute>
           }
         />

@@ -53,9 +53,11 @@ export interface Profissional extends Usuario {
 export interface PlanoSaude {
   id: number
   nome: string
-  operadora: string
-  numero: string
-  validade: string
+  descricao?: string
+  dataCriacao?: string
+  operadora?: string
+  numero?: string
+  validade?: string
   ativo: boolean
 }
 

@@ -52,6 +52,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 Atendimentos
               </a>
+              <a
+                href="/planos-saude"
+                className="text-gray-700 hover:text-blue-600 transition"
+              >
+                Planos de Saúde
+              </a>
             </nav>
           </div>
 
