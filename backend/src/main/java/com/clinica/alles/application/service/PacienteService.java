@@ -3,13 +3,18 @@ package com.clinica.alles.application.service;
 import com.clinica.alles.common.exception.ResourceNotFoundException;
 import com.clinica.alles.common.exception.ValidationException;
 import com.clinica.alles.domain.paciente.Paciente;
+import com.clinica.alles.domain.planosasaude.PlanoSaude;
 import com.clinica.alles.infrastructure.persistence.IPacienteRepository;
+import com.clinica.alles.infrastructure.persistence.IPlanoSaudeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Serviço para gerenciar operações de pacientes.
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PacienteService {
 
     private final IPacienteRepository pacienteRepository;
+    private final IPlanoSaudeRepository planoSaudeRepository;
 
     /**
      * Busca todos os pacientes com paginação.
@@ -130,6 +136,38 @@ public class PacienteService {
         pacienteRepository.save(paciente);
         
         log.info("Paciente deletado com sucesso: ID {}", id);
+    }
+
+    @Transactional
+    public Set<PlanoSaude> addPlanoSaude(Long pacienteId, Long planoSaudeId) {
+        Paciente paciente = findById(pacienteId);
+        PlanoSaude planoSaude = planoSaudeRepository.findById(planoSaudeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plano de saúde não encontrado com ID: " + planoSaudeId));
+
+        if (!Boolean.TRUE.equals(planoSaude.getAtivo())) {
+            throw new ValidationException("Não é possível vincular plano de saúde inativo");
+        }
+
+        paciente.getPlanosSaude().add(planoSaude);
+        Paciente updated = pacienteRepository.save(paciente);
+        return new HashSet<>(updated.getPlanosSaude());
+    }
+
+    @Transactional
+    public Set<PlanoSaude> removePlanoSaude(Long pacienteId, Long planoSaudeId) {
+        Paciente paciente = findById(pacienteId);
+        PlanoSaude planoSaude = planoSaudeRepository.findById(planoSaudeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plano de saúde não encontrado com ID: " + planoSaudeId));
+
+        paciente.getPlanosSaude().remove(planoSaude);
+        Paciente updated = pacienteRepository.save(paciente);
+        return new HashSet<>(updated.getPlanosSaude());
+    }
+
+    @Transactional(readOnly = true)
+    public Set<PlanoSaude> listPlanosSaude(Long pacienteId) {
+        Paciente paciente = findById(pacienteId);
+        return new HashSet<>(paciente.getPlanosSaude());
     }
 
     /**

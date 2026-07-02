@@ -3,9 +3,11 @@ package com.clinica.alles.application.service;
 import com.clinica.alles.common.exception.ResourceNotFoundException;
 import com.clinica.alles.common.exception.ValidationException;
 import com.clinica.alles.domain.paciente.Paciente;
+import com.clinica.alles.domain.planosasaude.PlanoSaude;
 import com.clinica.alles.domain.usuario.Perfil;
 import com.clinica.alles.domain.usuario.Usuario;
 import com.clinica.alles.infrastructure.persistence.IPacienteRepository;
+import com.clinica.alles.infrastructure.persistence.IPlanoSaudeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +35,15 @@ class PacienteServiceTest {
     @Mock
     private IPacienteRepository pacienteRepository;
 
+    @Mock
+    private IPlanoSaudeRepository planoSaudeRepository;
+
     @InjectMocks
     private PacienteService pacienteService;
 
     private Paciente paciente;
     private Usuario usuario;
+    private PlanoSaude planoSaude;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +60,11 @@ class PacienteServiceTest {
         paciente.setDataNascimento(LocalDate.of(1990, 1, 15));
         paciente.setAtivo(true);
         paciente.setDataCadastro(LocalDateTime.now());
+
+        planoSaude = new PlanoSaude();
+        planoSaude.setId(1L);
+        planoSaude.setNome("Plano Premium");
+        planoSaude.setAtivo(true);
     }
 
     @Test
@@ -173,5 +184,18 @@ class PacienteServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    @DisplayName("Should add health plan to patient")
+    void testAddPlanoSaude() {
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
+        when(planoSaudeRepository.findById(1L)).thenReturn(Optional.of(planoSaude));
+        when(pacienteRepository.save(any(Paciente.class))).thenReturn(paciente);
+
+        var result = pacienteService.addPlanoSaude(1L, 1L);
+
+        assertNotNull(result);
+        verify(pacienteRepository).save(any(Paciente.class));
     }
 }

@@ -21,6 +21,14 @@ public interface IPlanoSaudeRepository extends JpaRepository<PlanoSaude, Long> {
     Optional<PlanoSaude> findByNome(String nome);
 
     /**
+     * Verifica se existe plano de saúde com nome informado.
+     *
+     * @param nome nome do plano
+     * @return true se existir
+     */
+    boolean existsByNome(String nome);
+
+    /**
      * Busca todos os planos de saúde ativos.
      *
      * @return lista de planos ativos

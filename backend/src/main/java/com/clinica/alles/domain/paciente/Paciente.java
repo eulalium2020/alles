@@ -1,5 +1,6 @@
 package com.clinica.alles.domain.paciente;
 
+import com.clinica.alles.domain.planosasaude.PlanoSaude;
 import com.clinica.alles.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -68,6 +71,14 @@ public class Paciente {
 
     @Column(name = "antecedentes_medicos", columnDefinition = "TEXT")
     private String antecedenteMedicos;
+
+    @ManyToMany
+    @JoinTable(
+            name = "pacientes_planos_saude",
+            joinColumns = @JoinColumn(name = "paciente_id"),
+            inverseJoinColumns = @JoinColumn(name = "plano_saude_id")
+    )
+    private Set<PlanoSaude> planosSaude = new HashSet<>();
 
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;

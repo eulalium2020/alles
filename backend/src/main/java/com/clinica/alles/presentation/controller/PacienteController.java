@@ -3,6 +3,7 @@ package com.clinica.alles.presentation.controller;
 import com.clinica.alles.application.service.PacienteService;
 import com.clinica.alles.common.dto.PacienteRequest;
 import com.clinica.alles.domain.paciente.Paciente;
+import com.clinica.alles.domain.planosasaude.PlanoSaude;
 import com.clinica.alles.domain.usuario.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 /**
  * Controller REST para gerenciamento de pacientes.
@@ -176,5 +179,44 @@ public class PacienteController {
         log.info("Deletando paciente com ID: {}", id);
         pacienteService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/planos/{planoSaudeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @Operation(summary = "Vincular plano de saúde", description = "Vincula um plano de saúde ao paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Plano vinculado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente ou plano não encontrado")
+    })
+    public ResponseEntity<Set<PlanoSaude>> vincularPlanoSaude(
+            @PathVariable Long id,
+            @PathVariable Long planoSaudeId) {
+        log.info("Vinculando plano {} ao paciente {}", planoSaudeId, id);
+        return ResponseEntity.ok(pacienteService.addPlanoSaude(id, planoSaudeId));
+    }
+
+    @DeleteMapping("/{id}/planos/{planoSaudeId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+    @Operation(summary = "Desvincular plano de saúde", description = "Desvincula um plano de saúde do paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Plano desvinculado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente ou plano não encontrado")
+    })
+    public ResponseEntity<Set<PlanoSaude>> desvincularPlanoSaude(
+            @PathVariable Long id,
+            @PathVariable Long planoSaudeId) {
+        log.info("Desvinculando plano {} do paciente {}", planoSaudeId, id);
+        return ResponseEntity.ok(pacienteService.removePlanoSaude(id, planoSaudeId));
+    }
+
+    @GetMapping("/{id}/planos")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'PROFISSIONAL')")
+    @Operation(summary = "Listar planos do paciente", description = "Retorna planos de saúde vinculados ao paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Planos retornados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+    })
+    public ResponseEntity<Set<PlanoSaude>> listarPlanosSaude(@PathVariable Long id) {
+        return ResponseEntity.ok(pacienteService.listPlanosSaude(id));
     }
 }
