@@ -1,5 +1,6 @@
 package com.clinica.alles.presentation.controller;
 
+import com.clinica.alles.application.service.AuthService;
 import com.clinica.alles.common.dto.LoginRequest;
 import com.clinica.alles.common.dto.LoginResponse;
 import com.clinica.alles.common.dto.RefreshTokenRequest;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Autenticação", description = "Operações de autenticação e autorização")
 public class AuthController {
 
+    private final AuthService authService;
+
     /**
      * Realiza login do usuário.
      *
@@ -39,18 +42,8 @@ public class AuthController {
     })
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         log.info("Tentativa de login do usuário: {}", request.getEmail());
-        
-        // TODO: Implement authentication logic
-        // This is a placeholder implementation
-        LoginResponse response = LoginResponse.builder()
-                .token("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-                .refreshToken("refresh_token_...")
-                .email(request.getEmail())
-                .perfil("USER")
-                .usuarioId(1L)
-                .type("Bearer")
-                .build();
-        
+
+        LoginResponse response = authService.login(request.getEmail(), request.getSenha());
         return ResponseEntity.ok(response);
     }
 
@@ -69,15 +62,8 @@ public class AuthController {
     })
     public ResponseEntity<LoginResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         log.info("Requisição de atualização de token");
-        
-        // TODO: Implement token refresh logic
-        // This is a placeholder implementation
-        LoginResponse response = LoginResponse.builder()
-                .token("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-                .refreshToken(request.getRefreshToken())
-                .type("Bearer")
-                .build();
-        
+
+        LoginResponse response = authService.refreshToken(request.getRefreshToken());
         return ResponseEntity.ok(response);
     }
 
@@ -95,10 +81,7 @@ public class AuthController {
     })
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token) {
         log.info("Logout do usuário");
-        
-        // TODO: Implement logout logic (invalidate token)
-        // This is a placeholder implementation
-        
+        authService.logout(token);
         return ResponseEntity.noContent().build();
     }
 }
