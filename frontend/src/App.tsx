@@ -7,6 +7,9 @@ import {
 } from 'react-router-dom'
 import { LoginPage } from '@pages/LoginPage'
 import { DashboardPage } from '@pages/DashboardPage'
+import { ProfissionaisPage } from '@pages/ProfissionaisPage'
+import { PacientesPage } from '@pages/PacientesPage'
+import { AtendimentosPage } from '@pages/AtendimentosPage'
 import { MainLayout } from '@layouts/MainLayout'
 import { useIsAuthenticated } from '@store/authStore'
 import './index.css'
@@ -59,17 +62,11 @@ function App() {
         {/* Redirect to dashboard by default */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* Placeholder for future pages */}
         <Route
           path="/profissionais"
           element={
             <ProtectedRoute>
-              <div className="text-center py-12">
-                <h1 className="text-2xl font-bold">Profissionais</h1>
-                <p className="text-gray-600 mt-2">
-                  Em desenvolvimento... 👷‍♂️
-                </p>
-              </div>
+              <ProfissionaisPage />
             </ProtectedRoute>
           }
         />
@@ -78,12 +75,7 @@ function App() {
           path="/pacientes"
           element={
             <ProtectedRoute>
-              <div className="text-center py-12">
-                <h1 className="text-2xl font-bold">Pacientes</h1>
-                <p className="text-gray-600 mt-2">
-                  Em desenvolvimento... 👥
-                </p>
-              </div>
+              <PacientesPage />
             </ProtectedRoute>
           }
         />
@@ -92,12 +84,7 @@ function App() {
           path="/atendimentos"
           element={
             <ProtectedRoute>
-              <div className="text-center py-12">
-                <h1 className="text-2xl font-bold">Atendimentos</h1>
-                <p className="text-gray-600 mt-2">
-                  Em desenvolvimento... 📅
-                </p>
-              </div>
+              <AtendimentosPage />
             </ProtectedRoute>
           }
         />
