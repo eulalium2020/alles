@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: alles-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: alles
+      MYSQL_USER: alles_user
+      MYSQL_PASSWORD: alles_pass
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - alles-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: alles-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+      PMA_DATABASE: alles
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - alles-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  alles-network:
+    driver: bridge
