@@ -1,0 +1,156 @@
+package com.clinica.alles.presentation.controller;
+
+import com.clinica.alles.application.service.AtendimentoService;
+import com.clinica.alles.common.dto.AgendarRequest;
+import com.clinica.alles.common.dto.CancelarRequest;
+import com.clinica.alles.common.dto.PresencaRequest;
+import com.clinica.alles.domain.atendimento.Atendimento;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Controller REST para gerenciamento de atendimentos.
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api/atendimentos")
+@RequiredArgsConstructor
+@Tag(name = "Atendimentos", description = "Operações de gerenciamento de atendimentos")
+public class AtendimentoController {
+
+    private final AtendimentoService atendimentoService;
+
+    /**
+     * Busca todos os atendimentos com paginação.
+     *
+     * @param page número da página (começando de 0)
+     * @param size tamanho da página
+     * @return página de atendimentos
+     */
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Listar atendimentos", description = "Retorna uma página de atendimentos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de atendimentos retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acesso proibido")
+    })
+    public ResponseEntity<Page<Atendimento>> listar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.debug("Listando atendimentos com paginação: page={}, size={}", page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Atendimento> atendimentos = atendimentoService.findAll(pageable);
+        return ResponseEntity.ok(atendimentos);
+    }
+
+    /**
+     * Busca um atendimento pelo ID.
+     *
+     * @param id ID do atendimento
+     * @return dados do atendimento
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Buscar atendimento por ID", description = "Retorna os dados de um atendimento específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Atendimento encontrado"),
+            @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<Atendimento> buscarPorId(@PathVariable Long id) {
+        log.debug("Buscando atendimento com ID: {}", id);
+        Atendimento atendimento = atendimentoService.findById(id);
+        return ResponseEntity.ok(atendimento);
+    }
+
+    /**
+     * Agenda um novo atendimento.
+     *
+     * @param request dados do agendamento
+     * @return atendimento agendado
+     */
+    @PostMapping("/agendar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Agendar atendimento", description = "Agenda um novo atendimento entre profissional e paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Atendimento agendado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Profissional ou paciente não encontrado")
+    })
+    public ResponseEntity<Atendimento> agendar(@Valid @RequestBody AgendarRequest request) {
+        log.info("Agendando atendimento para profissional {} e paciente {}", 
+                request.getProfissionalId(), request.getPacienteId());
+        
+        Atendimento atendimento = atendimentoService.agendar(
+                request.getProfissionalId(),
+                request.getPacienteId(),
+                request.getDataHora()
+        );
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(atendimento);
+    }
+
+    /**
+     * Registra a presença em um atendimento.
+     *
+     * @param id ID do atendimento
+     * @param request dados da presença
+     * @return atendimento atualizado
+     */
+    @PostMapping("/{id}/registrar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Registrar presença", description = "Registra a presença em um atendimento")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Presença registrada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<Atendimento> registrarPresenca(
+            @PathVariable Long id,
+            @Valid @RequestBody PresencaRequest request) {
+        log.info("Registrando presença no atendimento: {}", id);
+        
+        Atendimento atendimento = atendimentoService.registrarPresenca(id, request.getAnotacoes());
+        return ResponseEntity.ok(atendimento);
+    }
+
+    /**
+     * Cancela um atendimento.
+     *
+     * @param id ID do atendimento
+     * @param request motivo do cancelamento
+     * @return atendimento cancelado
+     */
+    @PostMapping("/{id}/cancelar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Cancelar atendimento", description = "Cancela um atendimento agendado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Atendimento cancelado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na operação"),
+            @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<Atendimento> cancelar(
+            @PathVariable Long id,
+            @Valid @RequestBody CancelarRequest request) {
+        log.info("Cancelando atendimento: {}", id);
+        
+        Atendimento atendimento = atendimentoService.cancelar(id, request.getMotivo());
+        return ResponseEntity.ok(atendimento);
+    }
+}
