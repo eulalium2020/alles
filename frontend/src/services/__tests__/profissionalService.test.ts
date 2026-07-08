@@ -1,18 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ProfissionalService } from '@services/profissionalService'
-import { Profissional, PaginatedResponse } from '@types/index'
+import { describe, it, expect } from 'vitest'
+import { Profissional, PaginatedResponse } from '@/types'
 
 /**
  * 👨‍⚕️ Testes para ProfissionalService
  */
 describe('ProfissionalService', () => {
-  let service: ProfissionalService
-  let mockAxios: any
-
-  beforeEach(() => {
-    service = new ProfissionalService()
-    vi.clearAllMocks()
-  })
 
   describe('getAll', () => {
     it('deve retornar lista paginada de profissionais', async () => {

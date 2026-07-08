@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
-import { Paciente, PaginatedResponse, HttpException } from '@types/index'
+import { Paciente, PaginatedResponse, HttpException } from '@/types'
 
 /**
  * 🏥 Interface para o serviço de Pacientes (SOLID - Interface Segregation)

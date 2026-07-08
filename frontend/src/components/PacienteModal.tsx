@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paciente } from '@types/index'
+import { Paciente } from '@/types'
 import { PacienteForm } from './PacienteForm'
 
 /**

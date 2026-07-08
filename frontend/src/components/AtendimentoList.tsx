@@ -1,5 +1,5 @@
 import React from 'react'
-import { AtendimentoComDetalhes } from '@types/index'
+import { AtendimentoComDetalhes } from '@/types'
 
 /**
  * 📋 Props para lista de atendimentos

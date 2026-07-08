@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Atendimento, AtendimentoComDetalhes, PaginatedResponse } from '@types/index'
+import { Atendimento, AtendimentoComDetalhes, PaginatedResponse } from '@/types'
 import { atendimentoService } from '@services/atendimentoService'
 
 /**

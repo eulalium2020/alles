@@ -1,5 +1,5 @@
 import React from 'react'
-import { Paciente } from '@types/index'
+import { Paciente } from '@/types'
 
 /**
  * 💳 Props para card de paciente

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { usePaciente } from '@hooks/usePaciente'
-import { Paciente } from '@types/index'
+import { Paciente } from '@/types'
 import { PacienteList } from '@components/PacienteList'
 import { PacienteModal } from '@components/PacienteModal'
 

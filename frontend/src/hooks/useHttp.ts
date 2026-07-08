@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios'
 import { API_CONFIG, TOKEN_CONFIG, TIMEOUTS } from '@constants/api'
-import { HttpException } from '@types/index'
+import { HttpException } from '@/types'
 
 /**
  * 🪝 Hook para requisições HTTP com autenticação

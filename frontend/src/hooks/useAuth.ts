@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LoginRequest, LoginResponse } from '@types/index'
+import { LoginRequest, LoginResponse } from '@/types'
 import { authService } from '@services/authService'
 import { useAuthStore } from '@store/authStore'
 

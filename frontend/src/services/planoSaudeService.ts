@@ -1,6 +1,6 @@
-import axios, { AxiosError, AxiosInstance } from 'axios'
+import axios, { AxiosInstance } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
-import { HttpException, PaginatedResponse, PlanoSaude } from '@types/index'
+import { HttpException, PaginatedResponse, PlanoSaude } from '@/types'
 
 export interface IPlanoSaudeService {
   getAll(page: number, size: number): Promise<PaginatedResponse<PlanoSaude>>

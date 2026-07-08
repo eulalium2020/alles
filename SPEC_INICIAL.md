@@ -35,7 +35,7 @@
 ### 👥 CONTROLE DE ACESSO
 
 **Q4**: Perfis de usuário:
-- [ ] Profissional, Paciente, Recepcionista, Admin (obrigatório)
+- [x] Profissional, Paciente, Recepcionista, Admin (obrigatório)
 - [ ] Outros: _______
 
 **Q5**: Autenticação:
@@ -174,4 +174,25 @@ Após suas respostas, entregarei:
 - ✅ Arquitetura técnica
 - ✅ Estrutura inicial do projeto
 - ✅ Documento de padrões e convenções
+
+---
+
+## 🔧 HISTÓRICO DE MUDANÇAS TÉCNICAS
+
+### 03/07/2026 — Limpeza de Imports (Code Quality)
+
+**Correção de alias de tipos** (`@types/index` → `@/types`):
+- Padronizado em 27 arquivos (`services/`, `pages/`, `components/`, `hooks/`)
+- Alias correto conforme `tsconfig.json` paths: `"@/*": ["src/*"]`
+
+**Remoção de imports não utilizados** (erros `TS6133`):
+
+| Arquivo | Import removido |
+|---|---|
+| `src/components/ProfissionalForm.tsx` | `useEffect` (react), prop `especialidades` desestruturada |
+| `src/components/ProfissionalList.tsx` | `useState`, `useEffect` (react), `PaginatedResponse` |
+| `src/hooks/useProfissional.ts` | `useEffect` (react) |
+| `src/services/planoSaudeService.ts` | `AxiosError` (axios) |
+
+**Resultado**: `tsc --noEmit` passa sem erros com `noUnusedLocals: true` e `noUnusedParameters: true`.
 

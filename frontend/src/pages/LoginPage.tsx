@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '@hooks/useAuth'
-import { LoginRequest } from '@types/index'
+import { LoginRequest } from '@/types'
 
 /**
  * 🔐 Página de Login

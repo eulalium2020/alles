@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { PlanoSaude } from '@types/index'
+import { PlanoSaude } from '@/types'
 import { usePlanoSaude } from '@hooks/usePlanoSaude'
 
 export const PlanosSaudePage: React.FC = () => {

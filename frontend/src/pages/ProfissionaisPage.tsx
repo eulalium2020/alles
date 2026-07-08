@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useProfissional } from '@hooks/useProfissional'
-import { Profissional } from '@types/index'
+import { Profissional } from '@/types'
 import { ProfissionalList } from '@components/ProfissionalList'
 import { ProfissionalModal } from '@components/ProfissionalModal'
 

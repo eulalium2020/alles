@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
-import { Atendimento, AtendimentoComDetalhes, PaginatedResponse, HttpException } from '@types/index'
+import { Atendimento, AtendimentoComDetalhes, PaginatedResponse, HttpException } from '@/types'
 
 /**
  * 📅 Interface para o serviço de Atendimentos (SOLID - Interface Segregation)

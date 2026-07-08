@@ -1,5 +1,5 @@
 import React from 'react'
-import { Profissional, Especialidade } from '@types/index'
+import { Profissional, Especialidade } from '@/types'
 import { ProfissionalForm } from './ProfissionalForm'
 
 /**

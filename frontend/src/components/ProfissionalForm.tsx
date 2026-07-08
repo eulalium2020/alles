@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Profissional, Especialidade } from '@types/index'
+import React, { useState } from 'react'
+import { Profissional, Especialidade } from '@/types'
 
 /**
  * 📝 Props para o formulário de Profissional
@@ -20,7 +20,6 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
   onSubmit,
   onCancel,
   isLoading = false,
-  especialidades = [],
 }) => {
   const [formData, setFormData] = useState<Partial<Profissional>>(
     initialData || {

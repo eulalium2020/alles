@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { API_CONFIG, TOKEN_CONFIG, TIMEOUTS } from '@constants/api'
-import { HttpException, LoginRequest, LoginResponse, Usuario } from '@types/index'
+import { HttpException, LoginRequest, LoginResponse, Usuario } from '@/types'
 
 /**
  * 🔐 Serviço abstrato para autenticação
@@ -13,6 +13,11 @@ export interface IAuthService {
   validateToken(): boolean
   getAccessToken(): string | null
   getUser(): Usuario | null
+}
+
+interface DecodedTokenPayload {
+  exp?: number
+  [key: string]: unknown
 }
 
 /**
@@ -55,10 +60,16 @@ export class AuthService implements IAuthService {
    * 🔄 Renovar token de acesso
    */
   async refresh(refreshToken: string): Promise<LoginResponse> {
+    const tokenToRefresh = refreshToken || this.refreshToken
+
+    if (!tokenToRefresh) {
+      throw new Error('Refresh token not available')
+    }
+
     try {
       const response = await this.apiClient.post<LoginResponse>(
         API_CONFIG.ENDPOINTS.AUTH.REFRESH,
-        { refreshToken },
+        { refreshToken: tokenToRefresh },
       )
 
       const { accessToken, usuario } = response.data
@@ -96,6 +107,8 @@ export class AuthService implements IAuthService {
 
     try {
       const payload = this.decodeToken(this.accessToken)
+      if (typeof payload.exp !== 'number') return false
+
       const expiresAt = payload.exp * 1000
       return expiresAt > Date.now()
     } catch {
@@ -163,12 +176,11 @@ export class AuthService implements IAuthService {
   /**
    * 🔓 Decodificar JWT (sem validação de assinatura)
    */
-  private decodeToken(token: string): Record<string, unknown> {
+  private decodeToken(token: string): DecodedTokenPayload {
     const parts = token.split('.')
     if (parts.length !== 3) throw new Error('Invalid token')
 
-    const payload = JSON.parse(atob(parts[1]))
-    return payload
+    return JSON.parse(atob(parts[1])) as DecodedTokenPayload
   }
 
   /**

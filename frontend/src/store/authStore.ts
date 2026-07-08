@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
-import { Usuario, Perfil } from '@types/index'
+import { Usuario, Perfil } from '@/types'
 import { authService } from '@services/authService'
 
 interface AuthState {

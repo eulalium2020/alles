@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { PaginatedResponse, PlanoSaude } from '@types/index'
+import { PaginatedResponse, PlanoSaude } from '@/types'
 import { planoSaudeService } from '@services/planoSaudeService'
 
 interface UsePlanoSaudeState {

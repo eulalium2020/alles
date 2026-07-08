@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAtendimento } from '@hooks/useAtendimento'
-import { Atendimento, AtendimentoComDetalhes } from '@types/index'
+import { Atendimento, AtendimentoComDetalhes } from '@/types'
 import { AtendimentoList } from '@components/AtendimentoList'
 import { AtendimentoModal } from '@components/AtendimentoModal'
 

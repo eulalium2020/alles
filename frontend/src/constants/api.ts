@@ -10,9 +10,13 @@ export const COLORS = {
   dark: '#212529',
 } as const
 
+const env = (import.meta as ImportMeta & {
+  env?: Record<string, string | undefined>
+}).env
+
 /* 📌 API Configuration */
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  BASE_URL: env?.VITE_API_URL || 'http://localhost:8080/api',
   TIMEOUT: 10000,
   ENDPOINTS: {
     AUTH: {

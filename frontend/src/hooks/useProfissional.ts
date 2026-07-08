@@ -1,5 +1,5 @@
-import { useCallback, useState, useEffect } from 'react'
-import { Profissional, PaginatedResponse } from '@types/index'
+import { useCallback, useState } from 'react'
+import { Profissional, PaginatedResponse } from '@/types'
 import { profissionalService } from '@services/profissionalService'
 
 /**

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
-import { Profissional, PaginatedResponse, HttpException } from '@types/index'
+import { Profissional, PaginatedResponse, HttpException } from '@/types'
 
 /**
  * 👨‍⚕️ Interface para o serviço de Profissionais (SOLID - Interface Segregation)

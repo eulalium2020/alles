@@ -1,5 +1,5 @@
 import React from 'react'
-import { Profissional } from '@types/index'
+import { Profissional } from '@/types'
 
 /**
  * 💳 Props para card de profissional

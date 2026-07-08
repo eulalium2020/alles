@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Profissional, PaginatedResponse } from '@types/index'
+import React from 'react'
+import { Profissional } from '@/types'
 
 /**
  * 📋 Props para lista de profissionais

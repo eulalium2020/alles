@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Atendimento } from '@types/index'
+import { Atendimento } from '@/types'
 
 /**
  * 📝 Props para o formulário de Atendimento
