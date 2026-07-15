@@ -1,15 +1,15 @@
 # 📊 STATUS DO PROJETO ALLES
 
-**Atualizado em:** 08/07/2026  
+**Atualizado em:** 12/07/2026  
 **Versão de referência:** v1.0.x
 
 ---
 
 ## Resumo executivo
 
-O projeto já possui backend e frontend web funcionais e integráveis, com autenticação JWT, CRUD dos módulos principais e migrações de banco versionadas com Flyway.
+O projeto possui backend, frontend web e canal mobile funcionais, com autenticação JWT, CRUD dos módulos principais, migrações Flyway, expansão de testes e pipeline de deploy.
 
-**Progresso geral estimado:** **12/15 fases principais concluídas** (80%).
+**Progresso geral estimado:** **15/15 fases principais concluídas** (100%).
 
 ---
 
@@ -29,9 +29,9 @@ O projeto já possui backend e frontend web funcionais e integráveis, com auten
 | 10 | Serviços backend | ✅ Concluída |
 | 11 | Controllers REST | ✅ Concluída |
 | 12 | Migrações de banco (Flyway) | ✅ Concluída |
-| 13 | Estratégia e expansão de testes | 🟡 Em evolução |
-| 14 | Canal mobile (React Native) | ⏳ Pendente |
-| 15 | Deploy e CI/CD de produção | ⏳ Pendente |
+| 13 | Estratégia e expansão de testes | ✅ Concluída |
+| 14 | Canal mobile (React Native) | ✅ Concluída |
+| 15 | Deploy e CI/CD de produção | ✅ Concluída |
 
 ---
 
@@ -58,6 +58,7 @@ O projeto já possui backend e frontend web funcionais e integráveis, com auten
 ### Qualidade
 - Build Maven executa com sucesso
 - Suite de testes backend ativa (`src/test`)
+- Cobertura de integração expandida para controllers de Paciente e Atendimento
 
 ---
 
@@ -78,15 +79,29 @@ O projeto já possui backend e frontend web funcionais e integráveis, com auten
 
 ### Qualidade
 - Testes unitários em serviços/hooks/componentes (Vitest)
-- Evolução ativa com mudanças locais em andamento no repositório
+- Suíte E2E base com Cypress (`frontend/cypress`)
+- Pipeline CI validando lint/type-check/test/build
 
 ---
 
-## Pontos pendentes prioritários
+## Mobile - status atual
 
-1. Consolidar e ampliar cobertura de testes frontend e integração E2E.
-2. Implementar canal mobile (React Native).
-3. Definir e automatizar pipeline de deploy (CI/CD + ambiente produção).
+### Entregue
+- Projeto React Native com Expo (`mobile/`)
+- Autenticação JWT com persistência de sessão (AsyncStorage)
+- Dashboard mobile com consumo da API de profissionais
+- Hooks e serviços de API estruturados para reutilização no canal mobile
+
+---
+
+## Entregas de infraestrutura e deploy
+
+1. Dockerfile backend (`backend/Dockerfile`).
+2. Dockerfile frontend + Nginx (`frontend/Dockerfile`, `frontend/nginx.conf`).
+3. Orquestração de produção (`docker-compose.prod.yml`).
+4. CI (`.github/workflows/ci.yml`).
+5. Deploy de imagens para GHCR (`.github/workflows/deploy.yml`).
+6. Parametrização de runtime por ambiente (`application.yml` + `.env.prod.example`).
 
 ---
 
@@ -95,4 +110,4 @@ O projeto já possui backend e frontend web funcionais e integráveis, com auten
 - [`README.md`](./README.md)
 - [`INTEGRACAO_FRONTEND_BACKEND.md`](./INTEGRACAO_FRONTEND_BACKEND.md)
 - [`DESENVOLVIMENTO_BACKEND.md`](./DESENVOLVIMENTO_BACKEND.md)
-- [`DESENVOLVIMENTO_FRONTEND.md`](./DESENVOLVIMENTO_FRONTEND.md)
+- [`frontend/DESENVOLVIMENTO_FRONTEND.md`](./frontend/DESENVOLVIMENTO_FRONTEND.md)
