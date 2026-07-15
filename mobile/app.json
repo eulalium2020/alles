@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "ALLES Mobile",
+    "slug": "alles-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.clinica.alles.mobile"
+    },
+    "extra": {
+      "apiUrl": "http://10.0.2.2:8080/api"
+    }
+  }
+}
