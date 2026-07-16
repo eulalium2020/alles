@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useAtendimento } from '@hooks/useAtendimento'
-import { Atendimento, AtendimentoComDetalhes } from '@/types'
+import { useToast } from '@components/Toast'
+import { Atendimento, AtendimentoComDetalhes, StatusAtendimento } from '@/types'
 import { AtendimentoList } from '@components/AtendimentoList'
 import { AtendimentoModal } from '@components/AtendimentoModal'
 
@@ -8,10 +9,10 @@ import { AtendimentoModal } from '@components/AtendimentoModal'
  * 📅 Página de Atendimentos
  */
 export const AtendimentosPage: React.FC = () => {
+  const toast = useToast()
   const {
     atendimentos,
     loading,
-    error,
     pagination,
     fetchAtendimentos,
     agendar,
@@ -19,7 +20,6 @@ export const AtendimentosPage: React.FC = () => {
     registrarPresenca,
     cancelar,
     remove,
-    clearError,
   } = useAtendimento()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -27,101 +27,82 @@ export const AtendimentosPage: React.FC = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<AtendimentoComDetalhes | null>(null)
   const [presencaConfirm, setPresencaConfirm] = useState<AtendimentoComDetalhes | null>(null)
   const [cancelarConfirm, setCancelarConfirm] = useState<AtendimentoComDetalhes | null>(null)
+  const [filtroStatus, setFiltroStatus] = useState<StatusAtendimento | 'TODOS'>('TODOS')
 
-  /**
-   * Carregar atendimentos ao montar
-   */
+  const atendimentosFiltrados = useMemo(() => {
+    if (filtroStatus === 'TODOS') return atendimentos
+    return atendimentos.filter((a) => a.status === filtroStatus)
+  }, [atendimentos, filtroStatus])
+
   useEffect(() => {
     fetchAtendimentos(0, 10)
   }, [fetchAtendimentos])
 
-  /**
-   * Abrir modal para novo agendamento
-   */
   const handleNewClick = () => {
     setSelectedAtendimento(undefined)
     setIsModalOpen(true)
   }
 
-  /**
-   * Abrir modal para editar
-   */
   const handleEdit = (atendimento: AtendimentoComDetalhes) => {
     setSelectedAtendimento(atendimento)
     setIsModalOpen(true)
   }
 
-  /**
-   * Confirmar deleção
-   */
   const handleDeleteClick = (atendimento: AtendimentoComDetalhes) => {
     setDeleteConfirm(atendimento)
   }
 
-  /**
-   * Submeter formulário
-   */
   const handleSubmit = async (
     data: Omit<Atendimento, 'id' | 'criadoEm' | 'atualizadoEm'>,
   ) => {
     try {
       if (selectedAtendimento) {
         await update(selectedAtendimento.id, data)
+        toast.success('Atendimento atualizado!')
       } else {
         await agendar(data)
+        toast.success('Atendimento agendado com sucesso!')
       }
       setIsModalOpen(false)
       setSelectedAtendimento(undefined)
-    } catch (err) {
-      console.error('Erro ao salvar:', err)
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao salvar atendimento.')
     }
   }
 
-  /**
-   * Executar deleção
-   */
   const handleConfirmDelete = async () => {
     if (!deleteConfirm) return
-
     try {
       await remove(deleteConfirm.id)
       setDeleteConfirm(null)
-    } catch (err) {
-      console.error('Erro ao deletar:', err)
+      toast.success('Atendimento removido.')
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao deletar atendimento.')
     }
   }
 
-  /**
-   * Registrar presença
-   */
   const handleConfirmPresenca = async () => {
     if (!presencaConfirm) return
-
     try {
       await registrarPresenca(presencaConfirm.id)
       setPresencaConfirm(null)
-    } catch (err) {
-      console.error('Erro ao registrar presença:', err)
+      toast.success('Presença registrada!')
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao registrar presença.')
     }
   }
 
-  /**
-   * Cancelar atendimento
-   */
   const handleConfirmCancelar = async () => {
     if (!cancelarConfirm) return
-
     try {
       await cancelar(cancelarConfirm.id)
       setCancelarConfirm(null)
-    } catch (err) {
-      console.error('Erro ao cancelar:', err)
+      toast.info('Atendimento cancelado.')
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao cancelar atendimento.')
     }
   }
 
-  /**
-   * Mudar página
-   */
   const handlePageChange = (page: number) => {
     if (page >= 0 && page < pagination.totalPages) {
       fetchAtendimentos(page, pagination.pageSize)
@@ -130,7 +111,6 @@ export const AtendimentosPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Atendimentos</h1>
         <button
@@ -141,23 +121,32 @@ export const AtendimentosPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Mensagens de erro */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <span>{error}</span>
+      {/* Filtro por status */}
+      <div className="flex flex-wrap gap-2">
+        {(['TODOS', 'AGENDADO', 'REALIZADO', 'CANCELADO', 'NAO_COMPARECEU'] as const).map((s) => (
           <button
-            onClick={clearError}
-            className="absolute top-2 right-2 text-red-700 hover:text-red-900"
+            key={s}
+            onClick={() => setFiltroStatus(s)}
+            className={`px-3 py-1 rounded-full text-sm font-medium transition ${
+              filtroStatus === s
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
           >
-            ✕
+            {s === 'TODOS' ? 'Todos' : s.replace('_', ' ')}
+            {s !== 'TODOS' && (
+              <span className="ml-1 opacity-70">
+                ({atendimentos.filter((a) => a.status === s).length})
+              </span>
+            )}
           </button>
-        </div>
-      )}
+        ))}
+      </div>
 
       {/* Lista de atendimentos */}
       <div className="bg-white rounded-lg shadow">
         <AtendimentoList
-          atendimentos={atendimentos}
+          atendimentos={atendimentosFiltrados}
           loading={loading}
           pagination={pagination}
           onEdit={handleEdit}
@@ -241,9 +230,7 @@ export const AtendimentosPage: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm">
             <h3 className="text-lg font-bold mb-4">Confirmar Exclusão</h3>
-            <p className="text-gray-700 mb-6">
-              Tem certeza que deseja deletar este atendimento?
-            </p>
+            <p className="text-gray-700 mb-6">Tem certeza que deseja deletar este atendimento?</p>
             <div className="flex gap-2">
               <button
                 onClick={handleConfirmDelete}

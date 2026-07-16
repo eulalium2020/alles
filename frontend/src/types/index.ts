@@ -110,16 +110,22 @@ export interface PagamentoComDetalhes extends Pagamento {
 
 /* 📊 Relatório */
 export interface RelatorioMensal {
-  profissionalId: number
-  profissional: Profissional
+  profissional_id: number
+  profissional_nome: string
   mes: string
-  totalAtendimentos: number
-  atendimentosRealizados: number
-  atendimentosCancelados: number
-  atendimentosNaoCompareceu: number
-  valorTotal: number
-  valorPago: number
-  valorPendente: number
+  total_atendimentos: number
+  atendimentos_realizados: number
+  receita: number
+  pagamento: number
+  desconto_clinica: number
+  tipo_pagamento: string
+}
+
+export interface DashboardStats {
+  totalProfissionais: number
+  totalPacientes: number
+  atendimentosMes: number
+  receitaMes: number
 }
 
 /* 🔍 Filtros e Paginação */

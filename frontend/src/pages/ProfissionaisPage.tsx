@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useProfissional } from '@hooks/useProfissional'
+import { useToast } from '@components/Toast'
 import { Profissional } from '@/types'
 import { ProfissionalList } from '@components/ProfissionalList'
 import { ProfissionalModal } from '@components/ProfissionalModal'
@@ -8,88 +9,85 @@ import { ProfissionalModal } from '@components/ProfissionalModal'
  * 👨‍⚕️ Página de Profissionais
  */
 export const ProfissionaisPage: React.FC = () => {
+  const toast = useToast()
   const {
     profissionais,
     loading,
-    error,
     pagination,
     fetchProfissionais,
     create,
     update,
     remove,
-    clearError,
   } = useProfissional()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedProfissional, setSelectedProfissional] = useState<Profissional | undefined>()
   const [deleteConfirm, setDeleteConfirm] = useState<Profissional | null>(null)
+  const [busca, setBusca] = useState('')
+  const [filtroAtivo, setFiltroAtivo] = useState<'todos' | 'ativo' | 'inativo'>('todos')
 
-  /**
-   * Carregar profissionais ao montar
-   */
+  const profissionaisFiltrados = useMemo(() => {
+    return profissionais.filter((p) => {
+      const matchBusca =
+        !busca ||
+        p.nome?.toLowerCase().includes(busca.toLowerCase()) ||
+        p.crm?.toLowerCase().includes(busca.toLowerCase()) ||
+        p.email?.toLowerCase().includes(busca.toLowerCase())
+      const matchAtivo =
+        filtroAtivo === 'todos' ||
+        (filtroAtivo === 'ativo' && p.ativo) ||
+        (filtroAtivo === 'inativo' && !p.ativo)
+      return matchBusca && matchAtivo
+    })
+  }, [profissionais, busca, filtroAtivo])
+
   useEffect(() => {
     fetchProfissionais(0, 10)
   }, [fetchProfissionais])
 
-  /**
-   * Abrir modal para criar novo
-   */
   const handleNewClick = () => {
     setSelectedProfissional(undefined)
     setIsModalOpen(true)
   }
 
-  /**
-   * Abrir modal para editar
-   */
   const handleEdit = (profissional: Profissional) => {
     setSelectedProfissional(profissional)
     setIsModalOpen(true)
   }
 
-  /**
-   * Confirmar deleção
-   */
   const handleDeleteClick = (profissional: Profissional) => {
     setDeleteConfirm(profissional)
   }
 
-  /**
-   * Executar deleção
-   */
   const handleConfirmDelete = async () => {
     if (!deleteConfirm) return
-
     try {
       await remove(deleteConfirm.id)
       setDeleteConfirm(null)
-    } catch (err) {
-      console.error('Erro ao deletar:', err)
+      toast.success(`Profissional ${deleteConfirm.nome} removido.`)
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao deletar profissional.')
     }
   }
 
-  /**
-   * Submeter formulário
-   */
   const handleSubmit = async (
     data: Omit<Profissional, 'id' | 'criadoEm' | 'atualizadoEm'>,
   ) => {
     try {
       if (selectedProfissional) {
         await update(selectedProfissional.id, data)
+        toast.success('Profissional atualizado com sucesso!')
       } else {
         await create(data)
+        toast.success('Profissional criado com sucesso!')
       }
       setIsModalOpen(false)
       setSelectedProfissional(undefined)
-    } catch (err) {
-      console.error('Erro ao salvar:', err)
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao salvar profissional.')
     }
   }
 
-  /**
-   * Mudar página
-   */
   const handlePageChange = (page: number) => {
     if (page >= 0 && page < pagination.totalPages) {
       fetchProfissionais(page, pagination.pageSize)
@@ -109,23 +107,35 @@ export const ProfissionaisPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Mensagens de erro */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <span>{error}</span>
-          <button
-            onClick={clearError}
-            className="absolute top-2 right-2 text-red-700 hover:text-red-900"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      {/* Busca e filtros */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input
+          type="text"
+          placeholder="Buscar por nome, CRM ou email..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <select
+          value={filtroAtivo}
+          onChange={(e) => setFiltroAtivo(e.target.value as any)}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="todos">Todos</option>
+          <option value="ativo">Ativos</option>
+          <option value="inativo">Inativos</option>
+        </select>
+        {busca && (
+          <span className="self-center text-sm text-gray-500">
+            {profissionaisFiltrados.length} resultado(s)
+          </span>
+        )}
+      </div>
 
       {/* Lista de profissionais */}
       <div className="bg-white rounded-lg shadow">
         <ProfissionalList
-          profissionais={profissionais}
+          profissionais={profissionaisFiltrados}
           loading={loading}
           pagination={pagination}
           onEdit={handleEdit}

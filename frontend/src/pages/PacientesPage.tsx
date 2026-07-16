@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { usePaciente } from '@hooks/usePaciente'
+import { useToast } from '@components/Toast'
 import { Paciente } from '@/types'
 import { PacienteList } from '@components/PacienteList'
 import { PacienteModal } from '@components/PacienteModal'
@@ -8,86 +9,77 @@ import { PacienteModal } from '@components/PacienteModal'
  * 🏥 Página de Pacientes
  */
 export const PacientesPage: React.FC = () => {
+  const toast = useToast()
   const {
     pacientes,
     loading,
-    error,
     pagination,
     fetchPacientes,
     create,
     update,
     remove,
-    clearError,
   } = usePaciente()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedPaciente, setSelectedPaciente] = useState<Paciente | undefined>()
   const [deleteConfirm, setDeleteConfirm] = useState<Paciente | null>(null)
+  const [busca, setBusca] = useState('')
 
-  /**
-   * Carregar pacientes ao montar
-   */
+  const pacientesFiltrados = useMemo(() => {
+    if (!busca) return pacientes
+    return pacientes.filter(
+      (p) =>
+        p.nome?.toLowerCase().includes(busca.toLowerCase()) ||
+        p.cpf?.includes(busca) ||
+        p.email?.toLowerCase().includes(busca.toLowerCase()),
+    )
+  }, [pacientes, busca])
+
   useEffect(() => {
     fetchPacientes(0, 10)
   }, [fetchPacientes])
 
-  /**
-   * Abrir modal para criar novo
-   */
   const handleNewClick = () => {
     setSelectedPaciente(undefined)
     setIsModalOpen(true)
   }
 
-  /**
-   * Abrir modal para editar
-   */
   const handleEdit = (paciente: Paciente) => {
     setSelectedPaciente(paciente)
     setIsModalOpen(true)
   }
 
-  /**
-   * Confirmar deleção
-   */
   const handleDeleteClick = (paciente: Paciente) => {
     setDeleteConfirm(paciente)
   }
 
-  /**
-   * Executar deleção
-   */
   const handleConfirmDelete = async () => {
     if (!deleteConfirm) return
-
     try {
       await remove(deleteConfirm.id)
       setDeleteConfirm(null)
-    } catch (err) {
-      console.error('Erro ao deletar:', err)
+      toast.success(`Paciente ${deleteConfirm.nome} removido.`)
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao deletar paciente.')
     }
   }
 
-  /**
-   * Submeter formulário
-   */
   const handleSubmit = async (data: Omit<Paciente, 'id' | 'criadoEm' | 'atualizadoEm'>) => {
     try {
       if (selectedPaciente) {
         await update(selectedPaciente.id, data)
+        toast.success('Paciente atualizado com sucesso!')
       } else {
         await create(data)
+        toast.success('Paciente criado com sucesso!')
       }
       setIsModalOpen(false)
       setSelectedPaciente(undefined)
-    } catch (err) {
-      console.error('Erro ao salvar:', err)
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao salvar paciente.')
     }
   }
 
-  /**
-   * Mudar página
-   */
   const handlePageChange = (page: number) => {
     if (page >= 0 && page < pagination.totalPages) {
       fetchPacientes(page, pagination.pageSize)
@@ -96,7 +88,6 @@ export const PacientesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">Pacientes</h1>
         <button
@@ -107,23 +98,26 @@ export const PacientesPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Mensagens de erro */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          <span>{error}</span>
-          <button
-            onClick={clearError}
-            className="absolute top-2 right-2 text-red-700 hover:text-red-900"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      {/* Busca */}
+      <div className="flex gap-3">
+        <input
+          type="text"
+          placeholder="Buscar por nome, CPF ou email..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {busca && (
+          <span className="self-center text-sm text-gray-500">
+            {pacientesFiltrados.length} resultado(s)
+          </span>
+        )}
+      </div>
 
       {/* Lista de pacientes */}
       <div className="bg-white rounded-lg shadow">
         <PacienteList
-          pacientes={pacientes}
+          pacientes={pacientesFiltrados}
           loading={loading}
           pagination={pagination}
           onEdit={handleEdit}
