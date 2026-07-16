@@ -9,20 +9,20 @@ import { LoginRequest } from '@/types'
 export const LoginPage: React.FC = () => {
   const { login, error } = useAuth()
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [senha, setSenha] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!email || !password) {
+    if (!email || !senha) {
       alert('Preencha todos os campos')
       return
     }
 
     try {
       setIsSubmitting(true)
-      const credentials: LoginRequest = { email, password }
+      const credentials: LoginRequest = { email, senha }
       await login(credentials)
     } catch (err) {
       console.error('Login failed:', err)
@@ -73,8 +73,8 @@ export const LoginPage: React.FC = () => {
             <input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="••••••••"
               disabled={isSubmitting}

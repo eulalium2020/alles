@@ -1,9 +1,11 @@
 package com.clinica.alles.infrastructure.security;
 
+import com.clinica.alles.common.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -12,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Ponto de entrada para exceções de autenticação.
@@ -21,7 +21,10 @@ import java.util.Map;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public void commence(HttpServletRequest httpServletRequest,
@@ -32,14 +35,14 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
         httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        body.put("error", "Não Autenticado");
-        body.put("message", "Você precisa estar autenticado para acessar este recurso");
-        body.put("path", httpServletRequest.getServletPath());
+        ErrorResponse body = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpServletResponse.SC_UNAUTHORIZED)
+                .error("Não Autenticado")
+                .message("Você precisa estar autenticado para acessar este recurso")
+                .path(httpServletRequest.getServletPath())
+                .build();
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(httpServletResponse.getOutputStream(), body);
+        objectMapper.writeValue(httpServletResponse.getOutputStream(), body);
     }
 }

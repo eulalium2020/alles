@@ -15,7 +15,7 @@ export interface Usuario {
 
 export interface LoginRequest {
   email: string
-  password: string
+  senha: string
 }
 
 export interface LoginResponse {
