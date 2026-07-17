@@ -5,6 +5,7 @@ import com.clinica.alles.common.dto.AgendarRequest;
 import com.clinica.alles.common.dto.CancelarRequest;
 import com.clinica.alles.common.dto.PresencaRequest;
 import com.clinica.alles.domain.atendimento.Atendimento;
+import com.clinica.alles.domain.atendimento.AtendimentoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -47,13 +49,14 @@ public class AtendimentoController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "403", description = "Acesso proibido")
     })
-    public ResponseEntity<Page<Atendimento>> listar(
+    public ResponseEntity<Page<AtendimentoResponse>> listar(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         log.debug("Listando atendimentos com paginação: page={}, size={}", page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<Atendimento> atendimentos = atendimentoService.findAll(pageable);
-        return ResponseEntity.ok(atendimentos);
+        Page<AtendimentoResponse> responses = atendimentos.map(AtendimentoResponse::fromEntity);
+        return ResponseEntity.ok(responses);
     }
 
     /**
@@ -70,10 +73,10 @@ public class AtendimentoController {
             @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public ResponseEntity<Atendimento> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<AtendimentoResponse> buscarPorId(@PathVariable Long id) {
         log.debug("Buscando atendimento com ID: {}", id);
         Atendimento atendimento = atendimentoService.findById(id);
-        return ResponseEntity.ok(atendimento);
+        return ResponseEntity.ok(AtendimentoResponse.fromEntity(atendimento));
     }
 
     /**
@@ -91,7 +94,7 @@ public class AtendimentoController {
             @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Profissional ou paciente não encontrado")
     })
-    public ResponseEntity<Atendimento> agendar(@Valid @RequestBody AgendarRequest request) {
+    public ResponseEntity<AtendimentoResponse> agendar(@Valid @RequestBody AgendarRequest request) {
         log.info("Agendando atendimento para profissional {} e paciente {}", 
                 request.getProfissionalId(), request.getPacienteId());
         
@@ -101,7 +104,7 @@ public class AtendimentoController {
                 request.getDataHora()
         );
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(atendimento);
+        return ResponseEntity.status(HttpStatus.CREATED).body(AtendimentoResponse.fromEntity(atendimento));
     }
 
     /**
@@ -120,13 +123,13 @@ public class AtendimentoController {
             @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public ResponseEntity<Atendimento> registrarPresenca(
+    public ResponseEntity<AtendimentoResponse> registrarPresenca(
             @PathVariable Long id,
             @Valid @RequestBody PresencaRequest request) {
         log.info("Registrando presença no atendimento: {}", id);
         
         Atendimento atendimento = atendimentoService.registrarPresenca(id, request.getAnotacoes());
-        return ResponseEntity.ok(atendimento);
+        return ResponseEntity.ok(AtendimentoResponse.fromEntity(atendimento));
     }
 
     /**
@@ -145,12 +148,12 @@ public class AtendimentoController {
             @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
             @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    public ResponseEntity<Atendimento> cancelar(
+    public ResponseEntity<AtendimentoResponse> cancelar(
             @PathVariable Long id,
             @Valid @RequestBody CancelarRequest request) {
         log.info("Cancelando atendimento: {}", id);
         
         Atendimento atendimento = atendimentoService.cancelar(id, request.getMotivo());
-        return ResponseEntity.ok(atendimento);
+        return ResponseEntity.ok(AtendimentoResponse.fromEntity(atendimento));
     }
 }

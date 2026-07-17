@@ -41,12 +41,15 @@ export interface Especialidade {
 }
 
 export interface Profissional extends Usuario {
-  especialidade: Especialidade
-  crm: string
-  tipoPagamento: TipoPagamento
+  especialidade?: Especialidade | string // Pode ser objeto ou string (nome)
+  crm?: string
+  tipoPagamento?: TipoPagamento | string
   valorFixo?: number
+  valorConsultaParticular?: number
+  valorConsultaPlano?: number
   percentualReceita?: number
-  horariosAtendimento: string
+  descontoClinicaPercentual?: number
+  horariosAtendimento?: string
 }
 
 /* 🏥 Paciente */
@@ -63,8 +66,18 @@ export interface PlanoSaude {
 
 export interface Paciente extends Usuario {
   dataNascimento: string
-  planosSaude: PlanoSaude[]
-  historicoAtendimentos: number
+  cpf?: string
+  telefone?: string
+  endereco?: string
+  numero?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
+  cep?: string
+  alergias?: string
+  planosSaude?: PlanoSaude[]
+  historicoAtendimentos?: number
 }
 
 /* 📅 Atendimento */
