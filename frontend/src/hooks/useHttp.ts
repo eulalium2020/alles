@@ -8,11 +8,12 @@ async function tryRefreshToken(client: AxiosInstance): Promise<string | null> {
   if (!refreshToken) return null
 
   try {
-    const res = await client.post<{ accessToken: string }>(
+    const res = await client.post<{ accessToken?: string; token?: string }>(
       API_CONFIG.ENDPOINTS.AUTH.REFRESH,
       { refreshToken },
     )
-    const newToken = res.data.accessToken
+    const newToken = res.data.accessToken ?? res.data.token
+    if (!newToken) return null
     localStorage.setItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY, newToken)
     return newToken
   } catch {

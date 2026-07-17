@@ -12,10 +12,10 @@ import { useAuth } from '../context/AuthContext'
 export function LoginScreen() {
   const { login, isLoading, error } = useAuth()
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [senha, setSenha] = useState('')
 
   async function handleLogin() {
-    await login({ email, password })
+    await login({ email, senha })
   }
 
   return (
@@ -31,8 +31,8 @@ export function LoginScreen() {
         autoCapitalize="none"
       />
       <TextInput
-        value={password}
-        onChangeText={setPassword}
+        value={senha}
+        onChangeText={setSenha}
         style={styles.input}
         placeholder="Senha"
         secureTextEntry

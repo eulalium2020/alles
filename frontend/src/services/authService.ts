@@ -20,6 +20,16 @@ interface DecodedTokenPayload {
   [key: string]: unknown
 }
 
+interface BackendLoginResponse {
+  token?: string
+  accessToken?: string
+  refreshToken: string
+  email?: string
+  perfil?: Usuario['perfil']
+  usuarioId?: number
+  usuario?: Usuario
+}
+
 /**
  * 🔑 Implementação de Autenticação
  * Gerencia tokens JWT e sessão do usuário
@@ -43,14 +53,15 @@ export class AuthService implements IAuthService {
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await this.apiClient.post<LoginResponse>(
+      const response = await this.apiClient.post<BackendLoginResponse>(
         API_CONFIG.ENDPOINTS.AUTH.LOGIN,
         credentials,
       )
 
-      const { accessToken, refreshToken, usuario } = response.data
+      const normalized = this.normalizeLoginResponse(response.data)
+      const { accessToken, refreshToken, usuario } = normalized
       this.setTokens(accessToken, refreshToken, usuario)
-      return response.data
+      return normalized
     } catch (error) {
       throw this.handleError(error)
     }
@@ -67,17 +78,18 @@ export class AuthService implements IAuthService {
     }
 
     try {
-      const response = await this.apiClient.post<LoginResponse>(
+      const response = await this.apiClient.post<BackendLoginResponse>(
         API_CONFIG.ENDPOINTS.AUTH.REFRESH,
         { refreshToken: tokenToRefresh },
       )
 
-      const { accessToken, usuario } = response.data
+      const normalized = this.normalizeLoginResponse(response.data)
+      const { accessToken, usuario } = normalized
       this.accessToken = accessToken
       this.currentUser = usuario
       localStorage.setItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY, accessToken)
       localStorage.setItem(TOKEN_CONFIG.USER_KEY, JSON.stringify(usuario))
-      return response.data
+      return normalized
     } catch (error) {
       this.clearTokens()
       throw this.handleError(error)
@@ -147,6 +159,31 @@ export class AuthService implements IAuthService {
     localStorage.setItem(TOKEN_CONFIG.USER_KEY, JSON.stringify(usuario))
   }
 
+  private normalizeLoginResponse(data: BackendLoginResponse): LoginResponse {
+    const accessToken = data.accessToken ?? data.token
+    if (!accessToken || !data.refreshToken) {
+      throw new Error('Resposta de autenticação inválida')
+    }
+
+    const usuario: Usuario = data.usuario ?? {
+      id: data.usuarioId ?? 0,
+      nome: data.email ?? 'Usuário',
+      email: data.email ?? '',
+      cpf: '',
+      telefone: '',
+      perfil: data.perfil ?? 'ADMIN',
+      ativo: true,
+      criadoEm: '',
+      atualizadoEm: '',
+    }
+
+    return {
+      accessToken,
+      refreshToken: data.refreshToken,
+      usuario,
+    }
+  }
+
   /**
    * 🗑️ Limpar tokens
    */
@@ -168,9 +205,23 @@ export class AuthService implements IAuthService {
     const refresh = localStorage.getItem(TOKEN_CONFIG.REFRESH_TOKEN_KEY)
     const user = localStorage.getItem(TOKEN_CONFIG.USER_KEY)
 
-    if (token) this.accessToken = token
-    if (refresh) this.refreshToken = refresh
-    if (user) this.currentUser = JSON.parse(user)
+    if (token && token !== 'undefined' && token !== 'null') {
+      this.accessToken = token
+    } else {
+      localStorage.removeItem(TOKEN_CONFIG.ACCESS_TOKEN_KEY)
+    }
+
+    if (refresh && refresh !== 'undefined' && refresh !== 'null') {
+      this.refreshToken = refresh
+    } else {
+      localStorage.removeItem(TOKEN_CONFIG.REFRESH_TOKEN_KEY)
+    }
+
+    if (user && user !== 'undefined' && user !== 'null') {
+      this.currentUser = JSON.parse(user)
+    } else {
+      localStorage.removeItem(TOKEN_CONFIG.USER_KEY)
+    }
   }
 
   /**
