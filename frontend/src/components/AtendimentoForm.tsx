@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Atendimento } from '@/types'
 import { commonStyles, themeUtils } from '@/styles/theme'
 import { useProfissionaisNomes, usePacientesNomes } from '@/hooks/useNomes'
@@ -64,6 +64,24 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
   const handleBlur = (field: string) => {
     setTouched({ ...touched, [field]: true })
   }
+
+  /**
+   * Effect: Preencher dados ao editar (converter IDs para display names)
+   */
+  useEffect(() => {
+    if (initialData && profissionaisList.length > 0 && pacientesList.length > 0) {
+      const prof = profissionaisList.find((p) => p.id === (initialData as any).profissionalId)
+      const pac = pacientesList.find((p) => p.id === (initialData as any).pacienteId)
+
+      if (prof || pac) {
+        setFormData((prev) => ({
+          ...prev,
+          profissionalNome: prof?.display || prev.profissionalNome,
+          pacienteNome: pac?.display || prev.pacienteNome,
+        }))
+      }
+    }
+  }, [initialData, profissionaisList, pacientesList])
 
   /**
    * Submeter formulário

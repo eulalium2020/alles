@@ -109,6 +109,25 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
     setTouched({ ...touched, [field]: true })
   }
 
+  /**
+   * Effect: Preencher planos de saúde ao editar
+   */
+  useEffect(() => {
+    if (initialData && planosList.length > 0 && (initialData as any).planosSaudeIds) {
+      const planoIds = (initialData as any).planosSaudeIds as number[]
+      const planoNomes = planoIds
+        .map((id) => planosList.find((p) => p.id === id)?.nome)
+        .filter((nome): nome is string => nome !== undefined)
+
+      if (planoNomes.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          planosSaudeNomes: planoNomes,
+        }))
+      }
+    }
+  }, [initialData, planosList])
+
   return (
     <form onSubmit={handleSubmit} style={commonStyles.formContainer}>
       {/* Erro de Submissão */}

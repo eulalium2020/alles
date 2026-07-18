@@ -23,24 +23,31 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
   onCancel,
   isLoading = false,
 }) => {
-  const [formData, setFormData] = useState<Partial<Profissional & { especialidadeNome?: string }>>(
-    initialData || {
-      nome: '',
-      email: '',
-      cpf: '',
-      telefone: '',
-      crm: '',
-      especialidadeNome: '',
-      tipoPagamento: 'FIXO_POR_CONSULTA',
-      valorFixo: 0,
-      valorConsultaParticular: 0,
-      valorConsultaPlano: 0,
-      percentualReceita: 0,
-      descontoClinicaPercentual: 0,
-      horariosAtendimento: '',
-      ativo: true,
-    },
-  )
+  const [formData, setFormData] = useState<Partial<Profissional & { especialidadeNome?: string }>>(() => {
+    if (!initialData) {
+      return {
+        nome: '',
+        email: '',
+        cpf: '',
+        telefone: '',
+        crm: '',
+        especialidadeNome: '',
+        tipoPagamento: 'FIXO_POR_CONSULTA',
+        valorFixo: 0,
+        valorConsultaParticular: 0,
+        valorConsultaPlano: 0,
+        percentualReceita: 0,
+        descontoClinicaPercentual: 0,
+        horariosAtendimento: '',
+        ativo: true,
+      }
+    }
+    // Converter dados para formato de edição (name-based)
+    return {
+      ...initialData,
+      especialidadeNome: (initialData as any).especialidade || '',
+    }
+  })
 
   const { items: especialidadesList, loading: loadingEspecialidades, error: erroEspecialidades } = useEspecialidadesNomes()
 
