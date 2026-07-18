@@ -1,5 +1,4 @@
 import React from 'react'
-import { X } from 'lucide-react'
 import { AtendimentoComDetalhes } from '@/types'
 import { AtendimentoForm } from './AtendimentoForm'
 
@@ -40,9 +39,9 @@ export const AtendimentoModal: React.FC<AtendimentoModalProps> = ({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg disabled:opacity-50 transition"
+            className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg disabled:opacity-50 transition text-2xl font-bold"
           >
-            <X className="w-6 h-6" />
+            ✕
           </button>
         </div>
 

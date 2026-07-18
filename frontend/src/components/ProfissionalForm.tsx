@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Profissional, Especialidade } from '@/types'
+import { maskCPF, maskPhone, maskEmail, maskCRM, maskCurrency, maskPercentage } from '@/utils/inputMasks'
 
 /**
  * 📝 Props para o formulário de Profissional
@@ -89,11 +90,12 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-medium mb-1">Email *</label>
+          <label className="block text-sm font-medium mb-1">📧 Email *</label>
           <input
             type="email"
             value={formData.email || ''}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, email: maskEmail(e.target.value) })}
+            placeholder="seu@email.com"
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.email ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -104,11 +106,13 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
         {/* CPF */}
         <div>
-          <label className="block text-sm font-medium mb-1">CPF *</label>
+          <label className="block text-sm font-medium mb-1">🆔 CPF *</label>
           <input
             type="text"
             value={formData.cpf || ''}
-            onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, cpf: maskCPF(e.target.value) })}
+            placeholder="000.000.000-00"
+            maxLength="14"
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.cpf ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -119,11 +123,13 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
         {/* Telefone */}
         <div>
-          <label className="block text-sm font-medium mb-1">Telefone *</label>
+          <label className="block text-sm font-medium mb-1">📱 Telefone *</label>
           <input
             type="tel"
             value={formData.telefone || ''}
-            onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, telefone: maskPhone(e.target.value) })}
+            placeholder="(11) 99999-9999"
+            maxLength="15"
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.telefone ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -132,13 +138,15 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
           {errors.telefone && <span className="text-red-500 text-sm">{errors.telefone}</span>}
         </div>
 
-        {/* CRM */}
+        {/* Órgão de Classe (CRM) */}
         <div>
-          <label className="block text-sm font-medium mb-1">CRM *</label>
+          <label className="block text-sm font-medium mb-1">📜 Órgão de Classe *</label>
           <input
             type="text"
             value={formData.crm || ''}
-            onChange={(e) => setFormData({ ...formData, crm: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, crm: maskCRM(e.target.value) })}
+            placeholder="123456/SP"
+            maxLength="9"
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.crm ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -166,12 +174,16 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
         {/* Valor Fixo */}
         <div>
-          <label className="block text-sm font-medium mb-1">Valor Fixo (R$)</label>
+          <label className="block text-sm font-medium mb-1">💵 Valor Fixo (R$)</label>
           <input
-            type="number"
-            step="0.01"
-            value={formData.valorFixo || 0}
-            onChange={(e) => setFormData({ ...formData, valorFixo: parseFloat(e.target.value) })}
+            type="text"
+            value={formData.valorFixo ? maskCurrency(formData.valorFixo) : ''}
+            onChange={(e) => {
+              const cleaned = e.target.value.replace(/\D/g, '')
+              const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
+              setFormData({ ...formData, valorFixo: numValue })
+            }}
+            placeholder="R$ 0,00"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}
           />
@@ -179,14 +191,17 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
         {/* Percentual Receita */}
         <div>
-          <label className="block text-sm font-medium mb-1">Percentual Receita (%)</label>
+          <label className="block text-sm font-medium mb-1">📊 Percentual Receita (%)</label>
           <input
-            type="number"
-            step="0.01"
-            value={formData.percentualReceita || 0}
-            onChange={(e) =>
-              setFormData({ ...formData, percentualReceita: parseFloat(e.target.value) })
-            }
+            type="text"
+            value={formData.percentualReceita ? maskPercentage(formData.percentualReceita) : ''}
+            onChange={(e) => {
+              const cleaned = e.target.value.replace(/\D/g, '')
+              const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
+              setFormData({ ...formData, percentualReceita: numValue })
+            }}
+            placeholder="0,00"
+            maxLength="6"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}
           />

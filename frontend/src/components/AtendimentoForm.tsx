@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Atendimento } from '@/types'
-import { AlertCircle, CheckCircle, Info } from 'lucide-react'
 
 /**
  * 📝 Props para o formulário de Atendimento
@@ -124,15 +123,15 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
                 placeholder="ID do profissional"
               />
               {getFieldStatus('profissionalId') === 'success' && (
-                <CheckCircle className="absolute right-3 top-3 text-green-500 w-5 h-5" />
+                <span className="absolute right-3 top-2 text-2xl">✓</span>
               )}
               {getFieldStatus('profissionalId') === 'error' && (
-                <AlertCircle className="absolute right-3 top-3 text-red-500 w-5 h-5" />
+                <span className="absolute right-3 top-2 text-2xl">⚠️</span>
               )}
             </div>
             {errors.profissionalId && touched.profissionalId && (
               <span className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" /> {errors.profissionalId}
+                ⚠️ {errors.profissionalId}
               </span>
             )}
           </div>
@@ -161,15 +160,15 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
                 placeholder="ID do paciente"
               />
               {getFieldStatus('pacienteId') === 'success' && (
-                <CheckCircle className="absolute right-3 top-3 text-green-500 w-5 h-5" />
+                <span className="absolute right-3 top-2 text-2xl">✓</span>
               )}
               {getFieldStatus('pacienteId') === 'error' && (
-                <AlertCircle className="absolute right-3 top-3 text-red-500 w-5 h-5" />
+                <span className="absolute right-3 top-2 text-2xl">⚠️</span>
               )}
             </div>
             {errors.pacienteId && touched.pacienteId && (
               <span className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" /> {errors.pacienteId}
+                ⚠️ {errors.pacienteId}
               </span>
             )}
           </div>
@@ -207,20 +206,20 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
                 disabled={isLoading}
               />
               {getFieldStatus('dataHora') === 'success' && (
-                <CheckCircle className="absolute right-3 top-3 text-green-500 w-5 h-5" />
+                <span className="absolute right-3 top-2 text-2xl">✓</span>
               )}
               {getFieldStatus('dataHora') === 'error' && (
-                <AlertCircle className="absolute right-3 top-3 text-red-500 w-5 h-5" />
+                <span className="absolute right-3 top-2 text-2xl">⚠️</span>
               )}
             </div>
             {errors.dataHora && touched.dataHora && (
               <span className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" /> {errors.dataHora}
+                ⚠️ {errors.dataHora}
               </span>
             )}
             {!errors.dataHora && touched.dataHora && (
               <span className="text-green-600 text-sm mt-1 flex items-center gap-1">
-                <CheckCircle className="w-4 h-4" /> Data/hora válida
+                ✓ Data/hora válida
               </span>
             )}
           </div>
@@ -291,7 +290,7 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
 
         {/* Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <span className="text-xl">ℹ️</span>
           <p className="text-sm text-blue-700">
             <strong>Dica:</strong> Preencha os dados do paciente e profissional. O sistema validará
             disponibilidade automaticamente.

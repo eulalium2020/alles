@@ -11,12 +11,14 @@ export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLocalError(null)
 
     if (!email || !senha) {
-      alert('Preencha todos os campos')
+      setLocalError('Preencha todos os campos')
       return
     }
 
@@ -24,12 +26,16 @@ export const LoginPage: React.FC = () => {
       setIsSubmitting(true)
       const credentials: LoginRequest = { email, senha }
       await login(credentials)
-    } catch (err) {
+    } catch (err: any) {
+      const errorMsg = err?.message || 'Erro ao realizar login'
+      setLocalError(errorMsg)
       console.error('Login failed:', err)
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  const displayError = localError || error
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
@@ -41,9 +47,9 @@ export const LoginPage: React.FC = () => {
           Sistema de Gestão para Clínicas
         </p>
 
-        {error && (
+        {displayError && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+            ⚠️ {displayError}
           </div>
         )}
 
