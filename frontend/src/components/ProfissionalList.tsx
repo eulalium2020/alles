@@ -29,6 +29,8 @@ export const ProfissionalList: React.FC<ProfissionalListProps> = ({
   onDelete,
   onPageChange,
 }) => {
+  console.log('📊 ProfissionalList - Dados recebidos:', { profissionais, pagination })
+  
   if (loading && profissionais.length === 0) {
     return <div style={{
       textAlign: 'center',

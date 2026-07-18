@@ -36,7 +36,12 @@ export const PacientesPage: React.FC = () => {
   }, [pacientes, busca])
 
   useEffect(() => {
-    fetchPacientes(0, 10)
+    fetchPacientes(0, 10).then((response) => {
+      console.log('🔍 Pacientes Response:', response)
+      console.log('🔍 Pacientes Content:', response?.content)
+    }).catch((err) => {
+      console.error('❌ Erro ao buscar pacientes:', err)
+    })
   }, [fetchPacientes])
 
   const handleNewClick = () => {

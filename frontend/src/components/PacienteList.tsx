@@ -29,6 +29,8 @@ export const PacienteList: React.FC<PacienteListProps> = ({
   onDelete,
   onPageChange,
 }) => {
+  console.log('📊 PacienteList - Dados recebidos:', { pacientes, pagination })
+  
   if (loading && pacientes.length === 0) {
     return <div className="text-center py-8 text-gray-600">Carregando...</div>
   }
@@ -102,7 +104,9 @@ export const PacienteList: React.FC<PacienteListProps> = ({
           </tr>
         </thead>
         <tbody>
-          {pacientes.map((pac) => (
+          {pacientes.map((pac) => {
+            console.log('📋 Paciente item:', pac)
+            return (
             <tr 
               key={pac.id}
               style={{
@@ -112,9 +116,9 @@ export const PacienteList: React.FC<PacienteListProps> = ({
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--light-bg)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
-              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.nome}</td>
-              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.email}</td>
-              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.cpf}</td>
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.nome || 'N/A'}</td>
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.email || 'N/A'}</td>
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.cpf || 'N/A'}</td>
               <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>
                 {formatDate(pac.dataNascimento)}
               </td>
@@ -197,7 +201,8 @@ export const PacienteList: React.FC<PacienteListProps> = ({
                 </button>
               </td>
             </tr>
-          ))}
+            )
+          })}
         </tbody>
       </table>
 
