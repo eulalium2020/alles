@@ -53,7 +53,7 @@ public class PagamentoService {
         LocalDate dataInicio = mes.atDay(1);
         LocalDate dataFim = mes.atEndOfMonth();
         
-        List<Atendimento> atendimentosMes = atendimentoRepository.findByDataInicioBetween(
+        List<Atendimento> atendimentosMes = atendimentoRepository.findByDataHoraBetween(
                 dataInicio.atStartOfDay(),
                 dataFim.atTime(23, 59, 59)
         ).stream()

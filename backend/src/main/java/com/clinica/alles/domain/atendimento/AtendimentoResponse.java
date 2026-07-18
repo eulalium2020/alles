@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -38,27 +39,31 @@ public class AtendimentoResponse {
     public static AtendimentoResponse fromEntity(Atendimento atendimento) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 
-        String status;
-        if (atendimento.getDataFim() != null) {
-            status = "REALIZADO";
-        } else if (atendimento.getDiagnostico() != null && atendimento.getDiagnostico().startsWith("[CANCELADO]")) {
-            status = "CANCELADO";
-        } else {
-            status = "AGENDADO";
+        String status = atendimento.getStatus();
+        if (status == null || status.isBlank()) {
+            if (atendimento.getDataFim() != null) {
+                status = "REALIZADO";
+            } else if (atendimento.getDiagnostico() != null && atendimento.getDiagnostico().startsWith("[CANCELADO]")) {
+                status = "CANCELADO";
+            } else {
+                status = "AGENDADO";
+            }
         }
 
         return AtendimentoResponse.builder()
                 .id(atendimento.getId())
-                .profissionalId(atendimento.getProfissional().getId())
-                .pacienteId(atendimento.getPaciente().getId())
-                .dataHora(atendimento.getDataHora().format(formatter))
-                .tipoAtendimento("PRESENCIAL")
+                .profissionalId(atendimento.getProfissional() != null ? atendimento.getProfissional().getId() : null)
+                .pacienteId(atendimento.getPaciente() != null ? atendimento.getPaciente().getId() : null)
+                .dataHora(atendimento.getDataHora() != null ? atendimento.getDataHora().format(formatter) : null)
+                .tipoAtendimento(atendimento.getTipoAtendimento() != null ? atendimento.getTipoAtendimento() : "PRESENCIAL")
                 .status(status)
-                .anotacoes(atendimento.getNotasConsulta())
-                .criadoEm(atendimento.getDataCriacao().format(formatter))
-                .atualizadoEm(atendimento.getDataCriacao().format(formatter))
-                .profissional(ProfissionalSimples.fromEntity(atendimento.getProfissional()))
-                .paciente(PacienteSimples.fromEntity(atendimento.getPaciente()))
+                .anotacoes(atendimento.getAnotacoes() != null ? atendimento.getAnotacoes() : atendimento.getNotasConsulta())
+                .criadoEm(atendimento.getDataCriacao() != null ? atendimento.getDataCriacao().format(formatter) : null)
+                .atualizadoEm(atendimento.getDataAtualizacao() != null
+                        ? atendimento.getDataAtualizacao().format(formatter)
+                        : atendimento.getDataCriacao() != null ? atendimento.getDataCriacao().format(formatter) : null)
+                .profissional(atendimento.getProfissional() != null ? ProfissionalSimples.fromEntity(atendimento.getProfissional()) : null)
+                .paciente(atendimento.getPaciente() != null ? PacienteSimples.fromEntity(atendimento.getPaciente()) : null)
                 .valor(0.0)
                 .build();
     }
@@ -85,17 +90,18 @@ public class AtendimentoResponse {
 
         public static ProfissionalSimples fromEntity(Profissional prof) {
             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+            var usuario = prof.getUsuario();
             return ProfissionalSimples.builder()
                     .id(prof.getId())
-                    .nome(prof.getUsuario().getEmail()) // Usa email como nome até ter campo nome no Usuario
-                    .email(prof.getUsuario().getEmail())
-                    .perfil(prof.getUsuario().getPerfil().name())
-                    .ativo(prof.getUsuario().getAtivo())
-                    .criadoEm(prof.getUsuario().getDataCriacao().format(formatter))
-                    .atualizadoEm(prof.getUsuario().getDataAtualizacao().format(formatter))
+                    .nome(usuario != null ? (usuario.getNome() != null ? usuario.getNome() : usuario.getEmail()) : null)
+                    .email(usuario != null ? usuario.getEmail() : null)
+                    .perfil(usuario != null && usuario.getPerfil() != null ? usuario.getPerfil().name() : null)
+                    .ativo(usuario != null ? usuario.getAtivo() : null)
+                    .criadoEm(usuario != null && usuario.getDataCriacao() != null ? usuario.getDataCriacao().format(formatter) : null)
+                    .atualizadoEm(usuario != null && usuario.getDataAtualizacao() != null ? usuario.getDataAtualizacao().format(formatter) : null)
                     .crm(prof.getCrm())
-                    .especialidade(prof.getEspecialidade().getNome())
-                    .tipoPagamento(prof.getTipoPagamento().name())
+                    .especialidade(prof.getEspecialidade() != null ? prof.getEspecialidade().getNome() : null)
+                    .tipoPagamento(prof.getTipoPagamento() != null ? prof.getTipoPagamento().name() : null)
                     .valorConsultaParticular(prof.getValorConsultaParticular() != null ? prof.getValorConsultaParticular().doubleValue() : null)
                     .valorConsultaPlano(prof.getValorConsultaPlano() != null ? prof.getValorConsultaPlano().doubleValue() : null)
                     .percentualReceita(prof.getPercentualReceita() != null ? prof.getPercentualReceita().doubleValue() : null)
@@ -131,15 +137,16 @@ public class AtendimentoResponse {
         public static PacienteSimples fromEntity(Paciente pac) {
             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
             DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_DATE;
+            var usuario = pac.getUsuario();
             return PacienteSimples.builder()
                     .id(pac.getId())
-                    .nome(pac.getUsuario().getEmail()) // Usa email como nome até ter campo nome no Usuario
-                    .email(pac.getUsuario().getEmail())
-                    .perfil(pac.getUsuario().getPerfil().name())
-                    .ativo(pac.getUsuario().getAtivo())
-                    .criadoEm(pac.getUsuario().getDataCriacao().format(formatter))
-                    .atualizadoEm(pac.getUsuario().getDataAtualizacao().format(formatter))
-                    .dataNascimento(pac.getDataNascimento().format(dateFormatter))
+                    .nome(usuario != null ? (usuario.getNome() != null ? usuario.getNome() : usuario.getEmail()) : null)
+                    .email(usuario != null ? usuario.getEmail() : null)
+                    .perfil(usuario != null && usuario.getPerfil() != null ? usuario.getPerfil().name() : null)
+                    .ativo(usuario != null ? usuario.getAtivo() : null)
+                    .criadoEm(usuario != null && usuario.getDataCriacao() != null ? usuario.getDataCriacao().format(formatter) : null)
+                    .atualizadoEm(usuario != null && usuario.getDataAtualizacao() != null ? usuario.getDataAtualizacao().format(formatter) : null)
+                    .dataNascimento(pac.getDataNascimento() != null ? pac.getDataNascimento().format(dateFormatter) : null)
                     .cpf(pac.getCpf())
                     .telefone(pac.getTelefone())
                     .endereco(pac.getEndereco())

@@ -81,7 +81,7 @@ class AtendimentoServiceTest {
         atendimento.setId(1L);
         atendimento.setProfissional(profissional);
         atendimento.setPaciente(paciente);
-        atendimento.setDataInicio(LocalDateTime.now().plusDays(1));
+        atendimento.setDataHora(LocalDateTime.now().plusDays(1));
     }
 
     @Test

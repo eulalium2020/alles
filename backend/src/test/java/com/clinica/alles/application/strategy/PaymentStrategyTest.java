@@ -49,7 +49,7 @@ class PaymentStrategyTest {
         for (int i = 0; i < 5; i++) {
             Atendimento atendimento = new Atendimento();
             atendimento.setId((long) i);
-            atendimento.setDataInicio(LocalDateTime.now());
+            atendimento.setDataHora(LocalDateTime.now());
             atendimento.setDataFim(LocalDateTime.now().plusHours(1));
             atendimentos.add(atendimento);
         }
@@ -66,7 +66,7 @@ class PaymentStrategyTest {
         for (int i = 0; i < 3; i++) {
             Atendimento atendimento = new Atendimento();
             atendimento.setId((long) i);
-            atendimento.setDataInicio(LocalDateTime.now());
+            atendimento.setDataHora(LocalDateTime.now());
             atendimento.setDataFim(LocalDateTime.now().plusHours(1));
             atendimentos.add(atendimento);
         }
@@ -97,7 +97,7 @@ class PaymentStrategyTest {
         for (int i = 0; i < 3; i++) {
             Atendimento atendimento = new Atendimento();
             atendimento.setId((long) i);
-            atendimento.setDataInicio(LocalDateTime.now());
+            atendimento.setDataHora(LocalDateTime.now());
             atendimento.setDataFim(LocalDateTime.now().plusHours(1));
             atendimentos.add(atendimento);
         }
@@ -106,7 +106,7 @@ class PaymentStrategyTest {
         for (int i = 3; i < 5; i++) {
             Atendimento atendimento = new Atendimento();
             atendimento.setId((long) i);
-            atendimento.setDataInicio(LocalDateTime.now().plusDays(1));
+            atendimento.setDataHora(LocalDateTime.now().plusDays(1));
             atendimento.setDataFim(null);
             atendimentos.add(atendimento);
         }

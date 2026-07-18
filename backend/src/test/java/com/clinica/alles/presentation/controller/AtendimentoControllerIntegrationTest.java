@@ -56,7 +56,7 @@ class AtendimentoControllerIntegrationTest {
     void shouldListAppointments() throws Exception {
         Atendimento atendimento = new Atendimento();
         atendimento.setId(1L);
-        atendimento.setDataInicio(LocalDateTime.of(2026, 7, 14, 14, 0));
+        atendimento.setDataHora(LocalDateTime.of(2026, 7, 14, 14, 0));
 
         when(atendimentoService.findAll(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(List.of(atendimento)));
 
@@ -72,7 +72,7 @@ class AtendimentoControllerIntegrationTest {
     void shouldScheduleAppointment() throws Exception {
         Atendimento atendimento = new Atendimento();
         atendimento.setId(20L);
-        atendimento.setDataInicio(LocalDateTime.of(2026, 7, 20, 10, 0));
+        atendimento.setDataHora(LocalDateTime.of(2026, 7, 20, 10, 0));
 
         when(atendimentoService.agendar(anyLong(), anyLong(), any(LocalDateTime.class))).thenReturn(atendimento);
 
@@ -107,6 +107,6 @@ class AtendimentoControllerIntegrationTest {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(30))
-                .andExpect(jsonPath("$.notasConsulta").value("Paciente estável"));
+                .andExpect(jsonPath("$.anotacoes").value("Paciente estável"));
     }
 }

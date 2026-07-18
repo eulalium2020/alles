@@ -32,9 +32,9 @@ public interface IAtendimentoRepository extends JpaRepository<Atendimento, Long>
     /**
      * Busca atendimentos em um período de tempo.
      *
-     * @param dataInicio data inicial
+     * @param dataHoraInicio data inicial
      * @param dataFim data final
      * @return lista de atendimentos no período
      */
-    List<Atendimento> findByDataInicioBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
+    List<Atendimento> findByDataHoraBetween(LocalDateTime dataHoraInicio, LocalDateTime dataFim);
 }

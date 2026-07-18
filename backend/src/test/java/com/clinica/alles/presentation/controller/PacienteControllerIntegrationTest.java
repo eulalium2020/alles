@@ -127,6 +127,7 @@ class PacienteControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "nome": "Paciente Novo",
                                   "email": "novo.paciente@alles.com",
                                   "cpf": "12345678901",
                                   "dataNascimento": "1990-05-20",

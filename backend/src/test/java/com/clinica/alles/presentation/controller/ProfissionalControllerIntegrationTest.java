@@ -126,9 +126,13 @@ class ProfissionalControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "nome": "Dr. Novo",
                                   "email": "novo@alles.com",
+                                  "cpf": "12345678901",
+                                  "telefone": "(11) 98888-7777",
                                   "crm": "123456",
                                   "tipoPagamento": "FIXO_POR_CONSULTA",
+                                  "valorFixo": 150.00,
                                   "valorConsultaParticular": 150.00,
                                   "valorConsultaPlano": 100.00,
                                   "percentualReceita": 60.0,
