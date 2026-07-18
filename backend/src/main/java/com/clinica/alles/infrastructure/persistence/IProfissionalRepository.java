@@ -37,6 +37,14 @@ public interface IProfissionalRepository extends JpaRepository<Profissional, Lon
     Optional<Profissional> findByUsuarioId(Long usuarioId);
 
     /**
+     * Busca um profissional ativo pelo email do usuário.
+     *
+     * @param email o email do usuário
+     * @return um Optional contendo o profissional se encontrado
+     */
+    Optional<Profissional> findByUsuarioEmailIgnoreCaseAndAtivoTrue(String email);
+
+    /**
      * Busca todos os profissionais ativos.
      *
      * @return lista de profissionais ativos

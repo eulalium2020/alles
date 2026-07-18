@@ -19,6 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Controller REST para gerenciamento de profissionais de saúde.
  */
@@ -53,6 +57,45 @@ public class ProfissionalController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Profissional> profissionais = profissionalService.findAll(pageable);
         return ResponseEntity.ok(profissionais);
+    }
+
+    @GetMapping("/nomes")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA')")
+    @Operation(summary = "Listar nomes de profissionais", description = "Retorna nomes e identificadores de profissionais ativos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de nomes retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acesso proibido")
+    })
+    public ResponseEntity<List<Map<String, Object>>> listarNomes() {
+        log.debug("Listando nomes de profissionais ativos");
+        List<Map<String, Object>> profissionais = profissionalService.findAllAtivos().stream()
+                .map(profissional -> {
+                    String nome = profissional.getUsuario() != null ? profissional.getUsuario().getEmail() : "";
+                    String crm = profissional.getCrm();
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", profissional.getId());
+                    item.put("nome", nome);
+                    item.put("crm", crm);
+                    item.put("display", "%s (CRM: %s)".formatted(nome, crm != null ? crm : ""));
+                    return item;
+                })
+                .toList();
+        return ResponseEntity.ok(profissionais);
+    }
+
+    @GetMapping("/by-nome/{nome}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Buscar profissional por nome", description = "Retorna os dados de um profissional pelo nome do usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profissional encontrado"),
+            @ApiResponse(responseCode = "404", description = "Profissional não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<Profissional> buscarPorNome(@PathVariable String nome) {
+        log.debug("Buscando profissional por nome: {}", nome);
+        Profissional profissional = profissionalService.findByUsuarioNome(nome);
+        return ResponseEntity.ok(profissional);
     }
 
     /**

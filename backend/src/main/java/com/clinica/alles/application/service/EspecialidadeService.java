@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Serviço para gerenciar operações de especialidades.
  */
@@ -29,12 +31,29 @@ public class EspecialidadeService {
     }
 
     /**
+     * Busca todas as especialidades ativas.
+     */
+    public List<Especialidade> findAllAtivos() {
+        log.debug("Buscando todas as especialidades ativas");
+        return especialidadeRepository.findByAtivoTrue();
+    }
+
+    /**
      * Busca uma especialidade pelo ID.
      */
     public Especialidade findById(Long id) {
         log.debug("Buscando especialidade por ID: {}", id);
         return especialidadeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Especialidade não encontrada com ID: " + id));
+    }
+
+    /**
+     * Busca uma especialidade pelo nome.
+     */
+    public Especialidade findByNome(String nome) {
+        log.debug("Buscando especialidade por nome: {}", nome);
+        return especialidadeRepository.findByNome(nome)
+                .orElseThrow(() -> new ResourceNotFoundException("Especialidade não encontrada com nome: " + nome));
     }
 
     /**

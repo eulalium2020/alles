@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Profissional } from '@/types'
 import { maskCPF, maskPhone, maskEmail, maskCRM, maskCurrency, maskPercentage } from '@/utils/inputMasks'
 import { commonStyles, themeUtils } from '@/styles/theme'
+import { useEspecialidadesNomes } from '@/hooks/useNomes'
 
 /**
  * 📝 Props para o formulário de Profissional
@@ -22,14 +23,14 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
   onCancel,
   isLoading = false,
 }) => {
-  const [formData, setFormData] = useState<Partial<Profissional>>(
+  const [formData, setFormData] = useState<Partial<Profissional & { especialidadeNome?: string }>>(
     initialData || {
       nome: '',
       email: '',
       cpf: '',
       telefone: '',
       crm: '',
-      especialidade: '',
+      especialidadeNome: '',
       tipoPagamento: 'FIXO_POR_CONSULTA',
       valorFixo: 0,
       valorConsultaParticular: 0,
@@ -40,6 +41,8 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
       ativo: true,
     },
   )
+
+  const { items: especialidadesList, loading: loadingEspecialidades, error: erroEspecialidades } = useEspecialidadesNomes()
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -66,7 +69,7 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
       newErrors.telefone = 'Telefone deve ter pelo menos 10 dígitos'
 
     if (!formData.crm?.trim()) newErrors.crm = 'Órgão de classe é obrigatório'
-    if (!formData.especialidade) newErrors.especialidade = 'Especialidade é obrigatória'
+    if (!formData.especialidadeNome) newErrors.especialidadeNome = 'Especialidade é obrigatória'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -82,8 +85,17 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
     if (!validateForm()) return
 
     try {
+      // Converter nome para ID
+      const especialidade = especialidadesList.find((e) => e.nome === formData.especialidadeNome)
+
+      if (!especialidade) {
+        throw new Error('Especialidade não encontrada')
+      }
+
       const payload = {
         ...formData,
+        especialidade: especialidade.nome,
+        especialidadeNome: undefined,
         perfil: 'PROFISSIONAL' as const,
       } as Omit<Profissional, 'id' | 'criadoEm' | 'atualizadoEm' | 'perfil'>
 
@@ -250,22 +262,32 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
           {/* Especialidade */}
           <div>
             <label style={commonStyles.label}>🏥 Especialidade *</label>
-            <input
-              type="text"
-              value={formData.especialidade || ''}
-              onChange={(e) => setFormData({ ...formData, especialidade: e.target.value })}
-              onBlur={() => handleBlur('especialidade')}
-              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
-              onMouseLeave={(e) => !errors.especialidade && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
-              placeholder="Ex: Cardiologia"
-              style={{
-                ...commonStyles.input,
-                borderColor: errors.especialidade && touched.especialidade ? 'var(--error-red)' : 'var(--border-color)',
-              }}
-              disabled={isLoading}
-            />
-            {errors.especialidade && touched.especialidade && (
-              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.especialidade}</span>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={formData.especialidadeNome || ''}
+                onChange={(e) => setFormData({ ...formData, especialidadeNome: e.target.value })}
+                onBlur={() => handleBlur('especialidadeNome')}
+                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLSelectElement)}
+                onMouseLeave={(e) => !errors.especialidadeNome && themeUtils.resetInputFocus(e.target as HTMLSelectElement)}
+                style={{
+                  ...commonStyles.input,
+                  borderColor: errors.especialidadeNome && touched.especialidadeNome ? 'var(--error-red)' : 'var(--border-color)',
+                }}
+                disabled={isLoading || loadingEspecialidades}
+              >
+                <option value="">-- Selecione uma especialidade --</option>
+                {erroEspecialidades && (
+                  <option value="">⚠️ Erro ao carregar especialidades</option>
+                )}
+                {especialidadesList.map((e) => (
+                  <option key={e.id} value={e.nome}>
+                    {e.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {errors.especialidadeNome && touched.especialidadeNome && (
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.especialidadeNome}</span>
             )}
           </div>
 

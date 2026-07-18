@@ -29,6 +29,14 @@ public interface IPacienteRepository extends JpaRepository<Paciente, Long> {
     Optional<Paciente> findByUsuarioId(Long usuarioId);
 
     /**
+     * Busca um paciente ativo pelo email do usuário.
+     *
+     * @param email o email do usuário
+     * @return um Optional contendo o paciente se encontrado
+     */
+    Optional<Paciente> findByUsuarioEmailIgnoreCaseAndAtivoTrue(String email);
+
+    /**
      * Busca todos os pacientes ativos.
      *
      * @return lista de pacientes ativos

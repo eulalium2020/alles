@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -184,6 +185,29 @@ class PacienteServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    @DisplayName("Should find all active patients")
+    void testFindAllAtivos() {
+        when(pacienteRepository.findByAtivoTrue()).thenReturn(List.of(paciente));
+
+        List<Paciente> result = pacienteService.findAllAtivos();
+
+        assertEquals(1, result.size());
+        verify(pacienteRepository).findByAtivoTrue();
+    }
+
+    @Test
+    @DisplayName("Should find patient by user name")
+    void testFindByUsuarioNome() {
+        when(pacienteRepository.findByUsuarioEmailIgnoreCaseAndAtivoTrue("paciente@test.com"))
+                .thenReturn(Optional.of(paciente));
+
+        Paciente result = pacienteService.findByUsuarioNome("paciente@test.com");
+
+        assertEquals(1L, result.getId());
+        verify(pacienteRepository).findByUsuarioEmailIgnoreCaseAndAtivoTrue("paciente@test.com");
     }
 
     @Test

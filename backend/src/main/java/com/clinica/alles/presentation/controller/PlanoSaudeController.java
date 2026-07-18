@@ -18,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -46,6 +48,23 @@ public class PlanoSaudeController {
     @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     public ResponseEntity<List<PlanoSaude>> listarAtivos() {
         return ResponseEntity.ok(planoSaudeService.findAllAtivos());
+    }
+
+    @GetMapping("/nomes")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'PROFISSIONAL')")
+    @Operation(summary = "Listar nomes de planos", description = "Retorna nomes e identificadores de planos ativos")
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
+    public ResponseEntity<List<Map<String, Object>>> listarNomes() {
+        log.debug("Listando nomes de planos de saúde ativos");
+        List<Map<String, Object>> planos = planoSaudeService.findAllAtivos().stream()
+                .map(plano -> {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", plano.getId());
+                    item.put("nome", plano.getNome());
+                    return item;
+                })
+                .toList();
+        return ResponseEntity.ok(planos);
     }
 
     @GetMapping("/{id}")

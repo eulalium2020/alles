@@ -74,6 +74,43 @@ class ProfissionalControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should list professional names")
+    void shouldListProfessionalNames() throws Exception {
+        Profissional profissional = new Profissional();
+        profissional.setId(1L);
+        profissional.setCrm("123456");
+        Usuario usuario = new Usuario();
+        usuario.setEmail("profissional@alles.com");
+        profissional.setUsuario(usuario);
+
+        when(profissionalService.findAllAtivos()).thenReturn(List.of(profissional));
+
+        mockMvc.perform(get("/api/profissionais/nomes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("profissional@alles.com"))
+                .andExpect(jsonPath("$[0].crm").value("123456"))
+                .andExpect(jsonPath("$[0].display").value("profissional@alles.com (CRM: 123456)"));
+    }
+
+    @Test
+    @DisplayName("Should find professional by name")
+    void shouldFindProfessionalByName() throws Exception {
+        Profissional profissional = new Profissional();
+        profissional.setId(1L);
+        Usuario usuario = new Usuario();
+        usuario.setEmail("profissional@alles.com");
+        profissional.setUsuario(usuario);
+
+        when(profissionalService.findByUsuarioNome("profissional@alles.com")).thenReturn(profissional);
+
+        mockMvc.perform(get("/api/profissionais/by-nome/profissional@alles.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.usuario.email").value("profissional@alles.com"));
+    }
+
+    @Test
     @DisplayName("Should create professional successfully")
     void shouldCreateProfessional() throws Exception {
         Profissional profissional = new Profissional();

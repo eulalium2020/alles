@@ -74,6 +74,43 @@ class PacienteControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should list patient names")
+    void shouldListPatientNames() throws Exception {
+        Paciente paciente = new Paciente();
+        paciente.setId(1L);
+        paciente.setCpf("12345678901");
+        Usuario usuario = new Usuario();
+        usuario.setEmail("paciente@alles.com");
+        paciente.setUsuario(usuario);
+
+        when(pacienteService.findAllAtivos()).thenReturn(List.of(paciente));
+
+        mockMvc.perform(get("/api/pacientes/nomes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("paciente@alles.com"))
+                .andExpect(jsonPath("$[0].cpf").value("12345678901"))
+                .andExpect(jsonPath("$[0].display").value("paciente@alles.com (CPF: 12345678901)"));
+    }
+
+    @Test
+    @DisplayName("Should find patient by name")
+    void shouldFindPatientByName() throws Exception {
+        Paciente paciente = new Paciente();
+        paciente.setId(1L);
+        Usuario usuario = new Usuario();
+        usuario.setEmail("paciente@alles.com");
+        paciente.setUsuario(usuario);
+
+        when(pacienteService.findByUsuarioNome("paciente@alles.com")).thenReturn(paciente);
+
+        mockMvc.perform(get("/api/pacientes/by-nome/paciente@alles.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.usuario.email").value("paciente@alles.com"));
+    }
+
+    @Test
     @DisplayName("Should create patient successfully")
     void shouldCreatePatient() throws Exception {
         Paciente paciente = new Paciente();

@@ -17,6 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Controller REST para gerenciamento de especialidades.
  */
@@ -46,6 +50,39 @@ public class EspecialidadeController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Especialidade> especialidades = especialidadeService.findAll(pageable);
         return ResponseEntity.ok(especialidades);
+    }
+
+    @GetMapping("/nomes")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Listar nomes de especialidades", description = "Retorna nomes e identificadores de especialidades ativas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de nomes retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<List<Map<String, Object>>> listarNomes() {
+        log.debug("Listando nomes de especialidades ativas");
+        List<Map<String, Object>> especialidades = especialidadeService.findAllAtivos().stream()
+                .map(especialidade -> {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", especialidade.getId());
+                    item.put("nome", especialidade.getNome());
+                    return item;
+                })
+                .toList();
+        return ResponseEntity.ok(especialidades);
+    }
+
+    @GetMapping("/by-nome/{nome}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Buscar especialidade por nome")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Especialidade encontrada"),
+            @ApiResponse(responseCode = "404", description = "Especialidade não encontrada")
+    })
+    public ResponseEntity<Especialidade> buscarPorNome(@PathVariable String nome) {
+        log.debug("Buscando especialidade por nome: {}", nome);
+        Especialidade especialidade = especialidadeService.findByNome(nome);
+        return ResponseEntity.ok(especialidade);
     }
 
     /**

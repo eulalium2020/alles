@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -148,6 +149,29 @@ class ProfissionalServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    @DisplayName("Should find all active professionals")
+    void testFindAllAtivos() {
+        when(profissionalRepository.findByAtivoTrue()).thenReturn(List.of(profissional));
+
+        List<Profissional> result = profissionalService.findAllAtivos();
+
+        assertEquals(1, result.size());
+        verify(profissionalRepository).findByAtivoTrue();
+    }
+
+    @Test
+    @DisplayName("Should find professional by user name")
+    void testFindByUsuarioNome() {
+        when(profissionalRepository.findByUsuarioEmailIgnoreCaseAndAtivoTrue("prof@test.com"))
+                .thenReturn(Optional.of(profissional));
+
+        Profissional result = profissionalService.findByUsuarioNome("prof@test.com");
+
+        assertEquals(1L, result.getId());
+        verify(profissionalRepository).findByUsuarioEmailIgnoreCaseAndAtivoTrue("prof@test.com");
     }
 
     @Test

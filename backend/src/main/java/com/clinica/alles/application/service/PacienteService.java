@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,6 +41,16 @@ public class PacienteService {
     }
 
     /**
+     * Busca todos os pacientes ativos.
+     *
+     * @return lista de pacientes ativos
+     */
+    public List<Paciente> findAllAtivos() {
+        log.debug("Buscando todos os pacientes ativos");
+        return pacienteRepository.findByAtivoTrue();
+    }
+
+    /**
      * Busca um paciente pelo ID.
      *
      * @param id o ID do paciente
@@ -50,6 +61,19 @@ public class PacienteService {
         log.debug("Buscando paciente por ID: {}", id);
         return pacienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrado com ID: " + id));
+    }
+
+    /**
+     * Busca um paciente ativo pelo nome do usuário.
+     * Atualmente o domínio utiliza o email como identificador de nome.
+     *
+     * @param nome o nome do usuário
+     * @return o paciente encontrado
+     */
+    public Paciente findByUsuarioNome(String nome) {
+        log.debug("Buscando paciente por nome de usuário: {}", nome);
+        return pacienteRepository.findByUsuarioEmailIgnoreCaseAndAtivoTrue(nome)
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrado com nome: " + nome));
     }
 
     /**

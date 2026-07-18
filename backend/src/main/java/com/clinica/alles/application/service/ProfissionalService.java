@@ -41,6 +41,16 @@ public class ProfissionalService {
     }
 
     /**
+     * Busca todos os profissionais ativos.
+     *
+     * @return lista de profissionais ativos
+     */
+    public List<Profissional> findAllAtivos() {
+        log.debug("Buscando todos os profissionais ativos");
+        return profissionalRepository.findByAtivoTrue();
+    }
+
+    /**
      * Busca um profissional pelo ID.
      *
      * @param id o ID do profissional
@@ -51,6 +61,19 @@ public class ProfissionalService {
         log.debug("Buscando profissional por ID: {}", id);
         return profissionalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Profissional não encontrado com ID: " + id));
+    }
+
+    /**
+     * Busca um profissional ativo pelo nome do usuário.
+     * Atualmente o domínio utiliza o email como identificador de nome.
+     *
+     * @param nome o nome do usuário
+     * @return o profissional encontrado
+     */
+    public Profissional findByUsuarioNome(String nome) {
+        log.debug("Buscando profissional por nome de usuário: {}", nome);
+        return profissionalRepository.findByUsuarioEmailIgnoreCaseAndAtivoTrue(nome)
+                .orElseThrow(() -> new ResourceNotFoundException("Profissional não encontrado com nome: " + nome));
     }
 
     /**

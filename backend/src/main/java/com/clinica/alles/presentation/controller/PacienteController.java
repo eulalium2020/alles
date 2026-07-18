@@ -20,6 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -56,6 +59,45 @@ public class PacienteController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Paciente> pacientes = pacienteService.findAll(pageable);
         return ResponseEntity.ok(pacientes);
+    }
+
+    @GetMapping("/nomes")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Listar nomes de pacientes", description = "Retorna nomes e identificadores de pacientes ativos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de nomes retornada com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acesso proibido")
+    })
+    public ResponseEntity<List<Map<String, Object>>> listarNomes() {
+        log.debug("Listando nomes de pacientes ativos");
+        List<Map<String, Object>> pacientes = pacienteService.findAllAtivos().stream()
+                .map(paciente -> {
+                    String nome = paciente.getUsuario() != null ? paciente.getUsuario().getEmail() : "";
+                    String cpf = paciente.getCpf();
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", paciente.getId());
+                    item.put("nome", nome);
+                    item.put("cpf", cpf);
+                    item.put("display", "%s (CPF: %s)".formatted(nome, cpf != null ? cpf : ""));
+                    return item;
+                })
+                .toList();
+        return ResponseEntity.ok(pacientes);
+    }
+
+    @GetMapping("/by-nome/{nome}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Buscar paciente por nome", description = "Retorna os dados de um paciente pelo nome do usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente encontrado"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<Paciente> buscarPorNome(@PathVariable String nome) {
+        log.debug("Buscando paciente por nome: {}", nome);
+        Paciente paciente = pacienteService.findByUsuarioNome(nome);
+        return ResponseEntity.ok(paciente);
     }
 
     /**

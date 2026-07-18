@@ -94,6 +94,22 @@ class PlanoSaudeServiceTest {
     }
 
     @Test
+    @DisplayName("Should list active health plans")
+    void shouldListActiveHealthPlans() {
+        PlanoSaude plano = new PlanoSaude();
+        plano.setId(1L);
+        plano.setNome("Plano A");
+        plano.setAtivo(true);
+
+        when(planoSaudeRepository.findByAtivoTrue()).thenReturn(List.of(plano));
+
+        List<PlanoSaude> result = planoSaudeService.findAllAtivos();
+
+        assertEquals(1, result.size());
+        verify(planoSaudeRepository).findByAtivoTrue();
+    }
+
+    @Test
     @DisplayName("Should soft delete health plan")
     void shouldSoftDelete() {
         PlanoSaude plano = new PlanoSaude();

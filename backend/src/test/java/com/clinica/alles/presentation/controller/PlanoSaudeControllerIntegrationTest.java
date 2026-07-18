@@ -69,6 +69,22 @@ class PlanoSaudeControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("Should list health plan names")
+    void shouldListHealthPlanNames() throws Exception {
+        PlanoSaude plano = new PlanoSaude();
+        plano.setId(1L);
+        plano.setNome("Plano A");
+        plano.setAtivo(true);
+
+        when(planoSaudeService.findAllAtivos()).thenReturn(List.of(plano));
+
+        mockMvc.perform(get("/api/planos-saude/nomes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Plano A"));
+    }
+
+    @Test
     @DisplayName("Should create health plan")
     void shouldCreateHealthPlan() throws Exception {
         PlanoSaude plano = new PlanoSaude();

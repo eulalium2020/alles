@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Paciente } from '@/types'
 import { maskCPF, maskPhone, maskEmail } from '@/utils/inputMasks'
 import { commonStyles, themeUtils } from '@/styles/theme'
+import { usePlanosNomes } from '@/hooks/useNomes'
 
 /**
  * 📝 Props para o formulário de Paciente
@@ -22,7 +23,7 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
   onCancel,
   isLoading = false,
 }) => {
-  const [formData, setFormData] = useState<Partial<Paciente>>(
+  const [formData, setFormData] = useState<Partial<Paciente & { planosSaudeNomes?: string[] }>>(
     initialData || {
       nome: '',
       email: '',
@@ -37,9 +38,12 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
       estado: '',
       cep: '',
       alergias: '',
+      planosSaudeNomes: [],
       ativo: true,
     },
   )
+
+  const { items: planosList, loading: loadingPlanos, error: erroPlanos } = usePlanosNomes()
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -81,8 +85,15 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
     if (!validateForm()) return
 
     try {
+      // Converter nomes para IDs
+      const planosSaudeIds: number[] = (formData.planosSaudeNomes || [])
+        .map((nome) => planosList.find((p) => p.nome === nome)?.id)
+        .filter((id): id is number => id !== undefined)
+
       const payload = {
         ...formData,
+        planosSaudeIds,
+        planosSaudeNomes: undefined,
         perfil: 'PACIENTE' as const,
       } as Omit<Paciente, 'id' | 'criadoEm' | 'atualizadoEm' | 'perfil'>
 
@@ -354,11 +365,52 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
         </div>
       </div>
 
-      {/* Seção 3: Informações Médicas */}
+      {/* Seção 3: Planos de Saúde */}
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--secondary-teal)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--secondary-teal)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
+            3
+          </span>
+          Planos de Saúde (Opcional)
+        </h3>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
+          {erroPlanos ? (
+            <p style={{ color: 'var(--error-red)', fontSize: '0.85rem' }}>⚠️ Erro ao carregar planos de saúde</p>
+          ) : loadingPlanos ? (
+            <p style={{ color: 'var(--text-gray)', fontSize: '0.85rem' }}>⏳ Carregando planos...</p>
+          ) : planosList.length === 0 ? (
+            <p style={{ color: 'var(--text-gray)', fontSize: '0.85rem' }}>Nenhum plano disponível</p>
+          ) : (
+            planosList.map((plano) => (
+              <div key={plano.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                <input
+                  type="checkbox"
+                  id={`plano-${plano.id}`}
+                  checked={(formData.planosSaudeNomes || []).includes(plano.nome)}
+                  onChange={(e) => {
+                    const newPlanos = e.target.checked
+                      ? [...(formData.planosSaudeNomes || []), plano.nome]
+                      : (formData.planosSaudeNomes || []).filter((p) => p !== plano.nome)
+                    setFormData({ ...formData, planosSaudeNomes: newPlanos })
+                  }}
+                  style={{ width: '1rem', height: '1rem', borderRadius: 'var(--radius-xs)' }}
+                  disabled={isLoading}
+                />
+                <label htmlFor={`plano-${plano.id}`} style={{ ...commonStyles.label, margin: 0, cursor: 'pointer' }}>
+                  💳 {plano.nome}
+                </label>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Seção 4: Informações Médicas */}
       <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--success-green)' }}>
         <h3 style={commonStyles.formSectionTitle}>
           <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--success-green)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
-            3
+            4
           </span>
           Informações Médicas (Opcional)
         </h3>

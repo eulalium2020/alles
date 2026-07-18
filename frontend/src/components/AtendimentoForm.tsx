@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Atendimento } from '@/types'
 import { commonStyles, themeUtils } from '@/styles/theme'
+import { useProfissionaisNomes, usePacientesNomes } from '@/hooks/useNomes'
 
 /**
  * 📝 Props para o formulário de Atendimento
@@ -21,16 +22,19 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
   onCancel,
   isLoading = false,
 }) => {
-  const [formData, setFormData] = useState<Partial<Atendimento>>(
+  const [formData, setFormData] = useState<Partial<Atendimento & { profissionalNome?: string; pacienteNome?: string }>>(
     initialData || {
-      profissionalId: 0,
-      pacienteId: 0,
+      profissionalNome: '',
+      pacienteNome: '',
       dataHora: '',
       tipoAtendimento: 'PRESENCIAL',
       status: 'AGENDADO',
       anotacoes: '',
     },
   )
+
+  const { items: profissionaisList, loading: loadingProfissionais, error: erroProfissionais } = useProfissionaisNomes()
+  const { items: pacientesList, loading: loadingPacientes, error: erroPacientes } = usePacientesNomes()
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
@@ -41,8 +45,8 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.profissionalId) newErrors.profissionalId = 'Profissional é obrigatório'
-    if (!formData.pacienteId) newErrors.pacienteId = 'Paciente é obrigatório'
+    if (!formData.profissionalNome) newErrors.profissionalNome = 'Profissional é obrigatório'
+    if (!formData.pacienteNome) newErrors.pacienteNome = 'Paciente é obrigatório'
     if (!formData.dataHora) newErrors.dataHora = 'Data e hora são obrigatórias'
 
     // Validação adicional: data não pode ser no passado
@@ -70,7 +74,24 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
     if (!validateForm()) return
 
     try {
-      await onSubmit(formData as Omit<Atendimento, 'id' | 'criadoEm' | 'atualizadoEm'>)
+      // Converter nomes para IDs
+      const profissional = profissionaisList.find((p) => p.display === formData.profissionalNome)
+      const paciente = pacientesList.find((p) => p.display === formData.pacienteNome)
+
+      if (!profissional || !paciente) {
+        throw new Error('Profissional ou paciente não encontrado')
+      }
+
+      const dataToSubmit: Omit<Atendimento, 'id' | 'criadoEm' | 'atualizadoEm'> = {
+        profissionalId: profissional.id,
+        pacienteId: paciente.id,
+        dataHora: formData.dataHora || '',
+        tipoAtendimento: formData.tipoAtendimento || 'PRESENCIAL',
+        status: formData.status || 'AGENDADO',
+        anotacoes: formData.anotacoes || '',
+      }
+
+      await onSubmit(dataToSubmit)
     } catch (err) {
       console.error('Erro ao enviar formulário:', err)
     }
@@ -102,74 +123,104 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
         </h3>
 
         <div style={commonStyles.formGrid}>
-          {/* Profissional ID */}
+          {/* Profissional Name Select */}
           <div>
             <label style={commonStyles.label}>
               👨‍⚕️ Profissional <span style={{ color: 'var(--error-red)' }}>*</span>
             </label>
             <div style={{ position: 'relative' }}>
-              <input
-                type="number"
-                value={formData.profissionalId || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, profissionalId: parseInt(e.target.value) || 0 })
-                }
-                onBlur={() => handleBlur('profissionalId')}
-                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
-                onMouseLeave={(e) => !errors.profissionalId && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
+              <select
+                value={formData.profissionalNome || ''}
+                onChange={(e) => setFormData({ ...formData, profissionalNome: e.target.value })}
+                onBlur={() => handleBlur('profissionalNome')}
+                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLSelectElement)}
+                onMouseLeave={(e) => !errors.profissionalNome && themeUtils.resetInputFocus(e.target as HTMLSelectElement)}
                 style={{
                   ...commonStyles.input,
-                  borderColor: getFieldStatus('profissionalId') === 'error' ? 'var(--error-red)' : getFieldStatus('profissionalId') === 'success' ? 'var(--success-green)' : 'var(--border-color)',
+                  borderColor:
+                    getFieldStatus('profissionalNome') === 'error'
+                      ? 'var(--error-red)'
+                      : getFieldStatus('profissionalNome') === 'success'
+                        ? 'var(--success-green)'
+                        : 'var(--border-color)',
                 }}
-                disabled={isLoading}
-                placeholder="ID do profissional"
-              />
-              {getFieldStatus('profissionalId') === 'success' && (
-                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>✓</span>
+                disabled={isLoading || loadingProfissionais}
+              >
+                <option value="">-- Selecione um profissional --</option>
+                {erroProfissionais && (
+                  <option value="">⚠️ Erro ao carregar profissionais</option>
+                )}
+                {profissionaisList.map((p) => (
+                  <option key={p.id} value={p.display}>
+                    {p.display}
+                  </option>
+                ))}
+              </select>
+              {getFieldStatus('profissionalNome') === 'success' && (
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>
+                  ✓
+                </span>
               )}
-              {getFieldStatus('profissionalId') === 'error' && (
-                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>⚠️</span>
+              {getFieldStatus('profissionalNome') === 'error' && (
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>
+                  ⚠️
+                </span>
               )}
             </div>
-            {errors.profissionalId && touched.profissionalId && (
+            {errors.profissionalNome && touched.profissionalNome && (
               <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
-                ⚠️ {errors.profissionalId}
+                ⚠️ {errors.profissionalNome}
               </span>
             )}
           </div>
 
-          {/* Paciente ID */}
+          {/* Paciente Name Select */}
           <div>
             <label style={commonStyles.label}>
               👤 Paciente <span style={{ color: 'var(--error-red)' }}>*</span>
             </label>
             <div style={{ position: 'relative' }}>
-              <input
-                type="number"
-                value={formData.pacienteId || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, pacienteId: parseInt(e.target.value) || 0 })
-                }
-                onBlur={() => handleBlur('pacienteId')}
-                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
-                onMouseLeave={(e) => !errors.pacienteId && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
+              <select
+                value={formData.pacienteNome || ''}
+                onChange={(e) => setFormData({ ...formData, pacienteNome: e.target.value })}
+                onBlur={() => handleBlur('pacienteNome')}
+                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLSelectElement)}
+                onMouseLeave={(e) => !errors.pacienteNome && themeUtils.resetInputFocus(e.target as HTMLSelectElement)}
                 style={{
                   ...commonStyles.input,
-                  borderColor: getFieldStatus('pacienteId') === 'error' ? 'var(--error-red)' : getFieldStatus('pacienteId') === 'success' ? 'var(--success-green)' : 'var(--border-color)',
+                  borderColor:
+                    getFieldStatus('pacienteNome') === 'error'
+                      ? 'var(--error-red)'
+                      : getFieldStatus('pacienteNome') === 'success'
+                        ? 'var(--success-green)'
+                        : 'var(--border-color)',
                 }}
-                disabled={isLoading}
-                placeholder="ID do paciente"
-              />
-              {getFieldStatus('pacienteId') === 'success' && (
-                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>✓</span>
+                disabled={isLoading || loadingPacientes}
+              >
+                <option value="">-- Selecione um paciente --</option>
+                {erroPacientes && (
+                  <option value="">⚠️ Erro ao carregar pacientes</option>
+                )}
+                {pacientesList.map((p) => (
+                  <option key={p.id} value={p.display}>
+                    {p.display}
+                  </option>
+                ))}
+              </select>
+              {getFieldStatus('pacienteNome') === 'success' && (
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>
+                  ✓
+                </span>
               )}
-              {getFieldStatus('pacienteId') === 'error' && (
-                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>⚠️</span>
+              {getFieldStatus('pacienteNome') === 'error' && (
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>
+                  ⚠️
+                </span>
               )}
             </div>
-            {errors.pacienteId && touched.pacienteId && (
+            {errors.pacienteNome && touched.pacienteNome && (
               <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
-                ⚠️ {errors.pacienteId}
+                ⚠️ {errors.pacienteNome}
               </span>
             )}
           </div>
