@@ -74,25 +74,82 @@ export const Sidebar: React.FC = () => {
       {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xl"
+        style={{
+          display: 'none',
+          position: 'fixed',
+          top: 'var(--spacing-md)',
+          left: 'var(--spacing-md)',
+          zIndex: 50,
+          padding: 'var(--spacing-sm)',
+          backgroundColor: 'var(--primary-blue)',
+          color: 'var(--white)',
+          border: 'none',
+          borderRadius: 'var(--radius-sm)',
+          cursor: 'pointer',
+          fontSize: '1.2rem',
+          transition: 'all var(--transition-fast)'
+        }}
+        className="lg:hidden"
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#084A6E')}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-blue)')}
       >
         {isOpen ? '✕' : '☰'}
       </button>
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 text-white shadow-xl transition-transform duration-300 z-40 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          height: '100vh',
+          width: '256px',
+          background: `linear-gradient(180deg, var(--primary-blue) 0%, #084A6E 100%)`,
+          color: 'var(--white)',
+          boxShadow: 'var(--shadow-xl)',
+          transition: 'transform var(--transition-base)',
+          zIndex: 40,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-blue-700">
-          <h1 className="text-2xl font-bold text-white">🏥 ALLES</h1>
-          <p className="text-xs text-blue-200 mt-1">Clínica Management</p>
+        <div style={{
+          padding: 'var(--spacing-lg)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(0, 0, 0, 0.1)'
+        }}>
+          <h1 style={{
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--white)',
+            marginBottom: '4px',
+            fontFamily: 'var(--font-headings)'
+          }}>
+            🏥 ALLES
+          </h1>
+          <p style={{
+            fontSize: '0.75rem',
+            color: 'rgba(255, 255, 255, 0.7)',
+            marginTop: '4px'
+          }}>
+            Gerenciamento de Clínica
+          </p>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+        <nav style={{
+          flex: 1,
+          paddingTop: 'var(--spacing-lg)',
+          paddingLeft: 'var(--spacing-sm)',
+          paddingRight: 'var(--spacing-sm)',
+          paddingBottom: 0,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px'
+        }}>
           {filteredItems.map((item) => {
             const isItemActive = isActive(item.path)
             const hasSubmenu = item.submenu && item.submenu.length > 0
@@ -103,19 +160,46 @@ export const Sidebar: React.FC = () => {
                 {hasSubmenu ? (
                   <button
                     onClick={() => toggleSubmenu(item.label)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition ${
-                      isSubmenuOpen
-                        ? 'bg-blue-700 text-white'
-                        : 'hover:bg-blue-700 text-blue-100'
-                    }`}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingLeft: 'var(--spacing-md)',
+                      paddingRight: 'var(--spacing-md)',
+                      paddingTop: 'var(--spacing-sm)',
+                      paddingBottom: 'var(--spacing-sm)',
+                      borderRadius: 'var(--radius-sm)',
+                      transition: 'all var(--transition-fast)',
+                      backgroundColor: isSubmenuOpen ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                      color: isSubmenuOpen ? 'var(--white)' : 'rgba(255, 255, 255, 0.7)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '0.95rem',
+                      fontWeight: '500'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSubmenuOpen) {
+                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--white)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSubmenuOpen) {
+                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255, 255, 255, 0.7)';
+                      }
+                    }}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{item.icon}</span>
-                      <span className="font-medium">{item.label}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                      <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                      <span>{item.label}</span>
                     </div>
-                    <span className={`text-lg transition-transform ${
-                        isSubmenuOpen ? 'rotate-180' : ''
-                      }`}>
+                    <span style={{
+                      fontSize: '1rem',
+                      transition: 'transform var(--transition-fast)',
+                      transform: isSubmenuOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                    }}>
                       ⌄
                     </span>
                   </button>
@@ -123,30 +207,83 @@ export const Sidebar: React.FC = () => {
                   <Link
                     to={item.path}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                      isItemActive
-                        ? 'bg-white text-blue-900 font-semibold shadow-lg'
-                        : 'hover:bg-blue-700 text-blue-100'
-                    }`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--spacing-md)',
+                      paddingLeft: 'var(--spacing-md)',
+                      paddingRight: 'var(--spacing-md)',
+                      paddingTop: 'var(--spacing-sm)',
+                      paddingBottom: 'var(--spacing-sm)',
+                      borderRadius: 'var(--radius-sm)',
+                      transition: 'all var(--transition-fast)',
+                      backgroundColor: isItemActive ? 'var(--white)' : 'transparent',
+                      color: isItemActive ? 'var(--primary-blue)' : 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '0.95rem',
+                      fontWeight: isItemActive ? '600' : '500',
+                      boxShadow: isItemActive ? 'var(--shadow-md)' : 'none',
+                      textDecoration: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isItemActive) {
+                        (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isItemActive) {
+                        (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255, 255, 255, 0.7)';
+                      }
+                    }}
                   >
-                    <span className="text-xl">{item.icon}</span>
+                    <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
                     <span>{item.label}</span>
                   </Link>
                 )}
 
                 {/* Submenu */}
                 {hasSubmenu && isSubmenuOpen && (
-                  <div className="ml-4 mt-1 space-y-1 border-l-2 border-blue-600">
+                  <div style={{
+                    marginLeft: 'var(--spacing-md)',
+                    marginTop: '4px',
+                    paddingLeft: 'var(--spacing-md)',
+                    borderLeft: '2px solid rgba(69, 182, 156, 0.5)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px'
+                  }}>
                     {item.submenu.map((subitem) => (
                       <Link
                         key={subitem.path}
                         to={subitem.path}
                         onClick={() => setIsOpen(false)}
-                        className={`block px-4 py-2 rounded text-sm transition ${
-                          isActive(subitem.path)
-                            ? 'bg-white text-blue-900 font-semibold'
-                            : 'hover:bg-blue-700 text-blue-100'
-                        }`}
+                        style={{
+                          display: 'block',
+                          paddingLeft: 'var(--spacing-md)',
+                          paddingRight: 'var(--spacing-md)',
+                          paddingTop: '8px',
+                          paddingBottom: '8px',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.85rem',
+                          transition: 'all var(--transition-fast)',
+                          backgroundColor: isActive(subitem.path) ? 'var(--white)' : 'transparent',
+                          color: isActive(subitem.path) ? 'var(--primary-blue)' : 'rgba(255, 255, 255, 0.7)',
+                          fontWeight: isActive(subitem.path) ? '600' : '400',
+                          textDecoration: 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive(subitem.path)) {
+                            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                            (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive(subitem.path)) {
+                            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
+                            (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255, 255, 255, 0.7)';
+                          }
+                        }}
                       >
                         {subitem.label}
                       </Link>
@@ -159,27 +296,79 @@ export const Sidebar: React.FC = () => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-blue-700 space-y-2">
+        <div style={{
+          padding: 'var(--spacing-md)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px'
+        }}>
           <Link
             to="/settings"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-700 transition text-blue-100"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-md)',
+              paddingLeft: 'var(--spacing-md)',
+              paddingRight: 'var(--spacing-md)',
+              paddingTop: 'var(--spacing-sm)',
+              paddingBottom: 'var(--spacing-sm)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'rgba(255, 255, 255, 0.7)',
+              textDecoration: 'none',
+              transition: 'all var(--transition-fast)',
+              fontSize: '0.95rem'
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'transparent';
+              (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255, 255, 255, 0.7)';
+            }}
           >
-            <span className="text-xl">⚙️</span>
+            <span style={{ fontSize: '1.2rem' }}>⚙️</span>
             <span>Configurações</span>
           </Link>
 
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-700 transition text-blue-100"
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-md)',
+              paddingLeft: 'var(--spacing-md)',
+              paddingRight: 'var(--spacing-md)',
+              paddingTop: 'var(--spacing-sm)',
+              paddingBottom: 'var(--spacing-sm)',
+              borderRadius: 'var(--radius-sm)',
+              color: 'rgba(255, 255, 255, 0.7)',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
+              fontSize: '0.95rem',
+              fontWeight: '500'
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(220, 53, 69, 0.3)';
+              (e.currentTarget as HTMLButtonElement).style.color = 'var(--white)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255, 255, 255, 0.7)';
+            }}
           >
-            <span className="text-xl">🚪</span>
+            <span style={{ fontSize: '1.2rem' }}>🚪</span>
             <span>Sair</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content Shift */}
-      <div className="hidden lg:block lg:ml-64" />
+      <div style={{ display: 'none' }} className="lg:block lg:ml-64" />
     </>
   )
 }

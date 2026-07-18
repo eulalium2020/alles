@@ -27,66 +27,232 @@ export const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-30">
-      <div className="flex items-center justify-between px-6 py-4 gap-4">
+    <header 
+      style={{
+        backgroundColor: 'var(--white)',
+        boxShadow: 'var(--shadow-md)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 30,
+        borderBottom: '1px solid var(--border-color)'
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 'var(--spacing-lg) var(--spacing-xl)',
+        gap: 'var(--spacing-lg)',
+        maxWidth: '100%'
+      }}>
         {/* Left: Search */}
-        <div className="flex-1 max-w-md">
-          <div className="relative">
-            <span className="absolute left-3 top-3 text-gray-400 text-lg">🔍</span>
+        <div style={{ flex: 1, maxWidth: '500px' }}>
+          <div style={{ position: 'relative' }}>
+            <span style={{
+              position: 'absolute',
+              left: 'var(--spacing-md)',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              fontSize: '1.2rem',
+              color: 'var(--gray-medium)'
+            }}>
+              🔍
+            </span>
             <input
               type="text"
               placeholder="Buscar pacientes, atendimentos..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              style={{
+                width: '100%',
+                paddingLeft: '2.5rem',
+                paddingRight: 'var(--spacing-md)',
+                paddingTop: 'var(--spacing-sm)',
+                paddingBottom: 'var(--spacing-sm)',
+                border: '1.5px solid var(--border-color)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.95rem',
+                fontFamily: 'var(--font-main)',
+                transition: 'all var(--transition-fast)',
+              }}
+              onFocus={(e) => {
+                (e.target as HTMLInputElement).style.borderColor = 'var(--primary-blue)';
+                (e.target as HTMLInputElement).style.boxShadow = '0 0 0 3px rgba(10, 105, 146, 0.1)';
+              }}
+              onBlur={(e) => {
+                (e.target as HTMLInputElement).style.borderColor = 'var(--border-color)';
+                (e.target as HTMLInputElement).style.boxShadow = 'none';
+              }}
             />
           </div>
         </div>
 
         {/* Right: Notifications & User */}
-        <div className="flex items-center gap-4">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-lg)' }}>
           {/* Notifications */}
-          <button className="relative p-2 hover:bg-gray-100 rounded-lg transition text-xl">
+          <button 
+            style={{
+              position: 'relative',
+              padding: 'var(--spacing-sm)',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.3rem',
+              transition: 'all var(--transition-fast)',
+              borderRadius: 'var(--radius-sm)'
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--light-bg)')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
             🔔
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            <span style={{
+              position: 'absolute',
+              top: '2px',
+              right: '2px',
+              width: '8px',
+              height: '8px',
+              backgroundColor: 'var(--error-red)',
+              borderRadius: '50%',
+              display: 'inline-block'
+            }} />
           </button>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-gray-300" />
+          <div style={{
+            width: '1px',
+            height: '24px',
+            backgroundColor: 'var(--border-color)'
+          }} />
 
           {/* User Menu */}
-          <div className="flex items-center gap-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
             {/* Avatar */}
-            <div className="flex items-center gap-2">
-              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                background: `linear-gradient(135deg, var(--primary-blue), #084A6E)`,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--white)',
+                fontWeight: '600',
+                fontSize: '0.9rem',
+                flexShrink: 0,
+                boxShadow: 'var(--shadow-sm)'
+              }}>
                 {getInitials(usuario?.nome)}
               </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-semibold text-gray-900">{usuario?.nome || 'Usuário'}</p>
-                <p className="text-xs text-gray-500">{usuario?.perfil}</p>
+              <div style={{ display: 'none' }} className="sm:block">
+                <p style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-dark)' }}>
+                  {usuario?.nome || 'Usuário'}
+                </p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--gray-medium)', marginTop: '2px' }}>
+                  {usuario?.perfil}
+                </p>
               </div>
             </div>
 
             {/* Dropdown Menu */}
-            <div className="relative group">
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition text-lg">
+            <div style={{ position: 'relative', group: 'hover' }}>
+              <button 
+                style={{
+                  padding: 'var(--spacing-sm)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  transition: 'all var(--transition-fast)',
+                  borderRadius: 'var(--radius-sm)'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--light-bg)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
                 ⌄
               </button>
 
               {/* Dropdown Content */}
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="p-4 border-b border-gray-200">
-                  <p className="text-sm font-semibold text-gray-900">{usuario?.email}</p>
-                  <p className="text-xs text-gray-500 mt-1">{usuario?.perfil}</p>
+              <div style={{
+                position: 'absolute',
+                right: 0,
+                marginTop: 'var(--spacing-md)',
+                width: '220px',
+                backgroundColor: 'var(--white)',
+                borderRadius: 'var(--radius-sm)',
+                boxShadow: 'var(--shadow-lg)',
+                border: '1px solid var(--border-color)',
+                opacity: 0,
+                visibility: 'hidden',
+                transition: 'all var(--transition-fast)',
+                zIndex: 50
+              }}
+                className="group-hover:opacity-100 group-hover:visible"
+              >
+                <div style={{
+                  padding: 'var(--spacing-md)',
+                  borderBottom: '1px solid var(--border-color)'
+                }}>
+                  <p style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-dark)' }}>
+                    {usuario?.email}
+                  </p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--gray-medium)', marginTop: '4px' }}>
+                    {usuario?.perfil}
+                  </p>
                 </div>
 
-                <div className="py-2">
-                  <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                <div style={{ paddingTop: 'var(--spacing-sm)', paddingBottom: 'var(--spacing-sm)' }}>
+                  <button 
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--spacing-sm)',
+                      paddingLeft: 'var(--spacing-md)',
+                      paddingRight: 'var(--spacing-md)',
+                      paddingTop: 'var(--spacing-sm)',
+                      paddingBottom: 'var(--spacing-sm)',
+                      fontSize: '0.95rem',
+                      color: 'var(--text-dark)',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-fast)',
+                      borderRadius: 'var(--radius-sm)'
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--light-bg)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  >
                     👤 Meu Perfil
                   </button>
 
-                  <div className="px-4 py-2 border-t border-gray-200 mt-2">
+                  <div style={{
+                    paddingLeft: 'var(--spacing-md)',
+                    paddingRight: 'var(--spacing-md)',
+                    paddingTop: 'var(--spacing-sm)',
+                    paddingBottom: 'var(--spacing-sm)',
+                    borderTop: '1px solid var(--border-color)',
+                    marginTop: 'var(--spacing-sm)'
+                  }}>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-2 text-sm text-red-600 hover:bg-red-50 px-2 py-2 rounded transition"
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--spacing-sm)',
+                        fontSize: '0.95rem',
+                        color: 'var(--error-red)',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        paddingLeft: '8px',
+                        paddingRight: '8px',
+                        paddingTop: '8px',
+                        paddingBottom: '8px',
+                        borderRadius: 'var(--radius-sm)',
+                        transition: 'all var(--transition-fast)'
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#FADBD8')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                     >
                       🚪 Sair
                     </button>
