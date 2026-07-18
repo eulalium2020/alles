@@ -42,52 +42,158 @@ export const PacienteList: React.FC<PacienteListProps> = ({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead className="bg-gray-100">
+    <div style={{ overflow: 'auto', borderRadius: 'var(--radius-sm)', boxShadow: 'var(--shadow-sm)' }}>
+      <table style={{
+        width: '100%',
+        borderCollapse: 'collapse',
+        backgroundColor: 'var(--white)',
+        fontSize: '0.9rem'
+      }}>
+        <thead style={{ backgroundColor: 'var(--light-bg)' }}>
           <tr>
-            <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Nome</th>
-            <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Email</th>
-            <th className="border border-gray-300 px-4 py-2 text-left font-semibold">CPF</th>
-            <th className="border border-gray-300 px-4 py-2 text-left font-semibold">
-              Data Nascimento
-            </th>
-            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Status</th>
-            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Ações</th>
+            <th style={{
+              padding: 'var(--spacing-md)',
+              textAlign: 'left',
+              fontWeight: '600',
+              color: 'var(--primary-blue)',
+              borderBottom: '2px solid var(--border-color)',
+              fontFamily: 'var(--font-headings)'
+            }}>Nome</th>
+            <th style={{
+              padding: 'var(--spacing-md)',
+              textAlign: 'left',
+              fontWeight: '600',
+              color: 'var(--primary-blue)',
+              borderBottom: '2px solid var(--border-color)',
+              fontFamily: 'var(--font-headings)'
+            }}>Email</th>
+            <th style={{
+              padding: 'var(--spacing-md)',
+              textAlign: 'left',
+              fontWeight: '600',
+              color: 'var(--primary-blue)',
+              borderBottom: '2px solid var(--border-color)',
+              fontFamily: 'var(--font-headings)'
+            }}>CPF</th>
+            <th style={{
+              padding: 'var(--spacing-md)',
+              textAlign: 'left',
+              fontWeight: '600',
+              color: 'var(--primary-blue)',
+              borderBottom: '2px solid var(--border-color)',
+              fontFamily: 'var(--font-headings)'
+            }}>Data Nascimento</th>
+            <th style={{
+              padding: 'var(--spacing-md)',
+              textAlign: 'center',
+              fontWeight: '600',
+              color: 'var(--primary-blue)',
+              borderBottom: '2px solid var(--border-color)',
+              fontFamily: 'var(--font-headings)'
+            }}>Status</th>
+            <th style={{
+              padding: 'var(--spacing-md)',
+              textAlign: 'center',
+              fontWeight: '600',
+              color: 'var(--primary-blue)',
+              borderBottom: '2px solid var(--border-color)',
+              fontFamily: 'var(--font-headings)'
+            }}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {pacientes.map((pac) => (
-            <tr key={pac.id} className="hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2">{pac.nome}</td>
-              <td className="border border-gray-300 px-4 py-2">{pac.email}</td>
-              <td className="border border-gray-300 px-4 py-2">{pac.cpf}</td>
-              <td className="border border-gray-300 px-4 py-2">
+            <tr 
+              key={pac.id}
+              style={{
+                borderBottom: '1px solid var(--border-color)',
+                transition: 'background-color var(--transition-fast)'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--light-bg)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.nome}</td>
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.email}</td>
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>{pac.cpf}</td>
+              <td style={{ padding: 'var(--spacing-md)', color: 'var(--text-dark)' }}>
                 {formatDate(pac.dataNascimento)}
               </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
+              <td style={{ padding: 'var(--spacing-md)', textAlign: 'center' }}>
                 <span
-                  className={`inline-block px-2 py-1 rounded text-sm font-medium ${
-                    pac.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 12px',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    backgroundColor: pac.ativo ? '#D5F4E6' : '#FADBD8',
+                    color: pac.ativo ? '#0A5F3D' : '#78281F',
+                    border: `1.5px solid ${pac.ativo ? 'var(--success-green)' : 'var(--error-red)'}`
+                  }}
                 >
+                  <span>{pac.ativo ? '✓' : '✕'}</span>
                   {pac.ativo ? 'Ativo' : 'Inativo'}
                 </span>
               </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
+              <td style={{ padding: 'var(--spacing-md)', textAlign: 'center' }}>
                 <button
                   onClick={() => onEdit(pac)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 text-sm transition"
+                  style={{
+                    padding: '6px 12px',
+                    marginRight: 'var(--spacing-xs)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.8rem',
+                    fontWeight: '600',
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: 'var(--primary-blue)',
+                    color: 'var(--white)',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all var(--transition-fast)',
+                    opacity: loading ? 0.5 : 1,
+                    pointerEvents: loading ? 'none' : 'auto'
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#084A6E';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-md)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--primary-blue)';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-sm)';
+                  }}
                   disabled={loading}
                 >
-                  Editar
+                  ✎ Editar
                 </button>
                 <button
                   onClick={() => onDelete(pac)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition"
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.8rem',
+                    fontWeight: '600',
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: 'var(--error-red)',
+                    color: 'var(--white)',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'all var(--transition-fast)',
+                    opacity: loading ? 0.5 : 1,
+                    pointerEvents: loading ? 'none' : 'auto'
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#C0392B';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-md)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--error-red)';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-sm)';
+                  }}
                   disabled={loading}
                 >
-                  Deletar
+                  🗑 Deletar
                 </button>
               </td>
             </tr>

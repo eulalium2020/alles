@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Atendimento } from '@/types'
+import { commonStyles, themeUtils } from '@/styles/theme'
 
 /**
  * 📝 Props para o formulário de Atendimento
@@ -82,29 +83,31 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
+    <form onSubmit={handleSubmit} style={commonStyles.formContainer}>
       {/* Título */}
-      <div className="border-b pb-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+      <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--spacing-lg)' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-dark)', margin: 0 }}>
           {initialData ? '✏️ Editar Atendimento' : '📅 Novo Agendamento'}
         </h2>
-        <p className="text-sm text-gray-600 mt-1">Preencha os dados abaixo para continuar</p>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-gray)', marginTop: 'var(--spacing-xs)' }}>Preencha os dados abaixo para continuar</p>
       </div>
 
       {/* Seção 1: Participantes */}
-      <div className="space-y-4 p-4 bg-white rounded-lg border-l-4 border-blue-500">
-        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-          <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--primary-blue)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
+            1
+          </span>
           Selecione Profissional e Paciente
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={commonStyles.formGrid}>
           {/* Profissional ID */}
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              👨‍⚕️ Profissional <span className="text-red-500">*</span>
+            <label style={commonStyles.label}>
+              👨‍⚕️ Profissional <span style={{ color: 'var(--error-red)' }}>*</span>
             </label>
-            <div className="relative">
+            <div style={{ position: 'relative' }}>
               <input
                 type="number"
                 value={formData.profissionalId || ''}
@@ -112,25 +115,24 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
                   setFormData({ ...formData, profissionalId: parseInt(e.target.value) || 0 })
                 }
                 onBlur={() => handleBlur('profissionalId')}
-                className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                  getFieldStatus('profissionalId') === 'error'
-                    ? 'border-red-500 focus:ring-red-500'
-                    : getFieldStatus('profissionalId') === 'success'
-                      ? 'border-green-500 focus:ring-green-500'
-                      : 'border-gray-300 focus:ring-blue-500'
-                }`}
+                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+                onMouseLeave={(e) => !errors.profissionalId && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
+                style={{
+                  ...commonStyles.input,
+                  borderColor: getFieldStatus('profissionalId') === 'error' ? 'var(--error-red)' : getFieldStatus('profissionalId') === 'success' ? 'var(--success-green)' : 'var(--border-color)',
+                }}
                 disabled={isLoading}
                 placeholder="ID do profissional"
               />
               {getFieldStatus('profissionalId') === 'success' && (
-                <span className="absolute right-3 top-2 text-2xl">✓</span>
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>✓</span>
               )}
               {getFieldStatus('profissionalId') === 'error' && (
-                <span className="absolute right-3 top-2 text-2xl">⚠️</span>
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>⚠️</span>
               )}
             </div>
             {errors.profissionalId && touched.profissionalId && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
                 ⚠️ {errors.profissionalId}
               </span>
             )}
@@ -138,10 +140,10 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
 
           {/* Paciente ID */}
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              👤 Paciente <span className="text-red-500">*</span>
+            <label style={commonStyles.label}>
+              👤 Paciente <span style={{ color: 'var(--error-red)' }}>*</span>
             </label>
-            <div className="relative">
+            <div style={{ position: 'relative' }}>
               <input
                 type="number"
                 value={formData.pacienteId || ''}
@@ -149,25 +151,24 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
                   setFormData({ ...formData, pacienteId: parseInt(e.target.value) || 0 })
                 }
                 onBlur={() => handleBlur('pacienteId')}
-                className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                  getFieldStatus('pacienteId') === 'error'
-                    ? 'border-red-500 focus:ring-red-500'
-                    : getFieldStatus('pacienteId') === 'success'
-                      ? 'border-green-500 focus:ring-green-500'
-                      : 'border-gray-300 focus:ring-blue-500'
-                }`}
+                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+                onMouseLeave={(e) => !errors.pacienteId && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
+                style={{
+                  ...commonStyles.input,
+                  borderColor: getFieldStatus('pacienteId') === 'error' ? 'var(--error-red)' : getFieldStatus('pacienteId') === 'success' ? 'var(--success-green)' : 'var(--border-color)',
+                }}
                 disabled={isLoading}
                 placeholder="ID do paciente"
               />
               {getFieldStatus('pacienteId') === 'success' && (
-                <span className="absolute right-3 top-2 text-2xl">✓</span>
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>✓</span>
               )}
               {getFieldStatus('pacienteId') === 'error' && (
-                <span className="absolute right-3 top-2 text-2xl">⚠️</span>
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>⚠️</span>
               )}
             </div>
             {errors.pacienteId && touched.pacienteId && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
                 ⚠️ {errors.pacienteId}
               </span>
             )}
@@ -176,49 +177,48 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
       </div>
 
       {/* Seção 2: Data/Hora e Tipo */}
-      <div className="space-y-4 p-4 bg-white rounded-lg border-l-4 border-purple-500">
-        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-          <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--secondary-teal)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--secondary-teal)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
             2
           </span>
           Definir Data, Hora e Tipo
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={commonStyles.formGrid}>
           {/* Data/Hora */}
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              📅 Data e Hora <span className="text-red-500">*</span>
+            <label style={commonStyles.label}>
+              📅 Data e Hora <span style={{ color: 'var(--error-red)' }}>*</span>
             </label>
-            <div className="relative">
+            <div style={{ position: 'relative' }}>
               <input
                 type="datetime-local"
                 value={formData.dataHora || ''}
                 onChange={(e) => setFormData({ ...formData, dataHora: e.target.value })}
                 onBlur={() => handleBlur('dataHora')}
-                className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                  getFieldStatus('dataHora') === 'error'
-                    ? 'border-red-500 focus:ring-red-500'
-                    : getFieldStatus('dataHora') === 'success'
-                      ? 'border-green-500 focus:ring-green-500'
-                      : 'border-gray-300 focus:ring-blue-500'
-                }`}
+                onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+                onMouseLeave={(e) => !errors.dataHora && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
+                style={{
+                  ...commonStyles.input,
+                  borderColor: getFieldStatus('dataHora') === 'error' ? 'var(--error-red)' : getFieldStatus('dataHora') === 'success' ? 'var(--success-green)' : 'var(--border-color)',
+                }}
                 disabled={isLoading}
               />
               {getFieldStatus('dataHora') === 'success' && (
-                <span className="absolute right-3 top-2 text-2xl">✓</span>
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>✓</span>
               )}
               {getFieldStatus('dataHora') === 'error' && (
-                <span className="absolute right-3 top-2 text-2xl">⚠️</span>
+                <span style={{ position: 'absolute', right: 'var(--spacing-md)', top: 'var(--spacing-sm)', fontSize: '1.25rem' }}>⚠️</span>
               )}
             </div>
             {errors.dataHora && touched.dataHora && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
                 ⚠️ {errors.dataHora}
               </span>
             )}
             {!errors.dataHora && touched.dataHora && (
-              <span className="text-green-600 text-sm mt-1 flex items-center gap-1">
+              <span style={{ ...commonStyles.successMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>
                 ✓ Data/hora válida
               </span>
             )}
@@ -226,7 +226,7 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
 
           {/* Tipo de Atendimento */}
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
+            <label style={commonStyles.label}>
               🏥 Tipo de Atendimento
             </label>
             <select
@@ -234,7 +234,7 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
               onChange={(e) =>
                 setFormData({ ...formData, tipoAtendimento: e.target.value as any })
               }
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+              style={commonStyles.input}
               disabled={isLoading}
             >
               <option value="PRESENCIAL">🏥 Presencial</option>
@@ -245,24 +245,24 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
       </div>
 
       {/* Seção 3: Status e Anotações */}
-      <div className="space-y-4 p-4 bg-white rounded-lg border-l-4 border-green-500">
-        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-          <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--success-green)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--success-green)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
             3
           </span>
           Status e Anotações
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={commonStyles.formGrid}>
           {/* Status */}
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
+            <label style={commonStyles.label}>
               📊 Status
             </label>
             <select
               value={formData.status || 'AGENDADO'}
               onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-              className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              style={commonStyles.input}
               disabled={isLoading}
             >
               <option value="AGENDADO">📅 Agendado</option>
@@ -275,23 +275,25 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
 
         {/* Anotações */}
         <div>
-          <label className="block text-sm font-semibold mb-2 text-gray-700">
+          <label style={commonStyles.label}>
             📝 Anotações (Opcional)
           </label>
           <textarea
             value={formData.anotacoes || ''}
             onChange={(e) => setFormData({ ...formData, anotacoes: e.target.value })}
-            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+            onFocus={(e) => themeUtils.applyInputFocus(e.target as any)}
+            onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as any)}
             rows={3}
+            style={commonStyles.textarea}
             disabled={isLoading}
             placeholder="Adicione anotações sobre o atendimento..."
           />
         </div>
 
         {/* Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-          <span className="text-xl">ℹ️</span>
-          <p className="text-sm text-blue-700">
+        <div style={{ ...commonStyles.alertBanner, backgroundColor: '#E3F2FD', borderLeftColor: 'var(--primary-blue)', color: '#0D47A1', borderLeft: '4px solid var(--primary-blue)' }}>
+          <span style={{ fontSize: '1.25rem' }}>ℹ️</span>
+          <p style={{ fontSize: '0.85rem', margin: 0 }}>
             <strong>Dica:</strong> Preencha os dados do paciente e profissional. O sistema validará
             disponibilidade automaticamente.
           </p>
@@ -299,11 +301,13 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-3 pt-4 border-t">
+      <div style={commonStyles.formActions}>
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold py-3 px-4 rounded-lg transition shadow-md hover:shadow-lg"
+          onMouseEnter={(e) => !isLoading && themeUtils.applyPrimaryButtonHover(e.currentTarget)}
+          onMouseLeave={(e) => !isLoading && themeUtils.resetPrimaryButton(e.currentTarget)}
+          style={{ ...commonStyles.button, ...commonStyles.buttonPrimary, flex: 1 }}
         >
           {isLoading ? '⏳ Salvando...' : initialData ? '💾 Atualizar Agendamento' : '✅ Agendar'}
         </button>
@@ -311,7 +315,7 @@ export const AtendimentoForm: React.FC<AtendimentoFormProps> = ({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="flex-1 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-800 font-semibold py-3 px-4 rounded-lg transition"
+          style={{ ...commonStyles.button, backgroundColor: '#E0E0E0', color: 'var(--text-dark)', flex: 1, opacity: isLoading ? 0.6 : 1 }}
         >
           Cancelar
         </button>

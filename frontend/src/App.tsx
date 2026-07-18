@@ -12,6 +12,7 @@ import { PacientesPage } from '@pages/PacientesPage'
 import { AtendimentosPage } from '@pages/AtendimentosPage'
 import { PlanosSaudePage } from '@pages/PlanosSaudePage'
 import { MainLayout } from './layouts/MainLayout'
+import { ThemeToggle } from '@components/ThemeToggle'
 import { useIsAuthenticated } from '@store/authStore'
 import './index.css'
 
@@ -46,6 +47,9 @@ function App() {
 
   return (
     <Router>
+      {/* Theme Toggle Button */}
+      <ThemeToggle />
+
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />

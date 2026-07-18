@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { PlanoSaude } from '@/types'
 import { maskPhone } from '@/utils/inputMasks'
+import { commonStyles, themeUtils } from '@/styles/theme'
 
 /**
  * 📝 Props para o formulário de Plano de Saúde
@@ -64,103 +65,118 @@ export const PlanoSaudeForm: React.FC<PlanoSaudeFormProps> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} style={commonStyles.formContainer}>
+      <div style={commonStyles.formGrid}>
         {/* Nome */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-1">🏥 Nome do Plano *</label>
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={commonStyles.label}>🏥 Nome do Plano *</label>
           <input
             type="text"
             value={formData.nome || ''}
             onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+            onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+            onMouseLeave={(e) => !errors.nome && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
             placeholder="Ex: Plano de Saúde Premium"
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.nome ? 'border-red-500' : 'border-gray-300'
-            }`}
+            style={{
+              ...commonStyles.input,
+              borderColor: errors.nome ? 'var(--error-red)' : 'var(--border-color)',
+            }}
             disabled={isLoading}
           />
-          {errors.nome && <span className="text-red-500 text-sm">{errors.nome}</span>}
+          {errors.nome && <span style={commonStyles.errorMessage}>{errors.nome}</span>}
         </div>
 
         {/* Operadora */}
         <div>
-          <label className="block text-sm font-medium mb-1">🏢 Operadora *</label>
+          <label style={commonStyles.label}>🏢 Operadora *</label>
           <input
             type="text"
             value={formData.operadora || ''}
             onChange={(e) => setFormData({ ...formData, operadora: e.target.value })}
+            onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+            onMouseLeave={(e) => !errors.operadora && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
             placeholder="Ex: Amil, Bradesco Saúde"
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.operadora ? 'border-red-500' : 'border-gray-300'
-            }`}
+            style={{
+              ...commonStyles.input,
+              borderColor: errors.operadora ? 'var(--error-red)' : 'var(--border-color)',
+            }}
             disabled={isLoading}
           />
-          {errors.operadora && <span className="text-red-500 text-sm">{errors.operadora}</span>}
+          {errors.operadora && <span style={commonStyles.errorMessage}>{errors.operadora}</span>}
         </div>
 
         {/* Número */}
         <div>
-          <label className="block text-sm font-medium mb-1">📋 Número do Plano *</label>
+          <label style={commonStyles.label}>📋 Número do Plano *</label>
           <input
             type="text"
             value={formData.numero || ''}
             onChange={(e) => setFormData({ ...formData, numero: e.target.value })}
+            onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+            onMouseLeave={(e) => !errors.numero && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
             placeholder="Ex: 123456789"
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.numero ? 'border-red-500' : 'border-gray-300'
-            }`}
+            style={{
+              ...commonStyles.input,
+              borderColor: errors.numero ? 'var(--error-red)' : 'var(--border-color)',
+            }}
             disabled={isLoading}
           />
-          {errors.numero && <span className="text-red-500 text-sm">{errors.numero}</span>}
+          {errors.numero && <span style={commonStyles.errorMessage}>{errors.numero}</span>}
         </div>
 
         {/* Validade */}
         <div>
-          <label className="block text-sm font-medium mb-1">📅 Data de Validade</label>
+          <label style={commonStyles.label}>📅 Data de Validade</label>
           <input
             type="date"
             value={formData.validade || ''}
             onChange={(e) => setFormData({ ...formData, validade: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+            onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
+            style={commonStyles.input}
             disabled={isLoading}
           />
         </div>
 
         {/* Descrição */}
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-1">📝 Descrição</label>
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={commonStyles.label}>📝 Descrição</label>
           <textarea
             value={formData.descricao || ''}
             onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+            onFocus={(e) => themeUtils.applyInputFocus(e.target as any)}
+            onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as any)}
             placeholder="Adicione detalhes sobre o plano..."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={commonStyles.textarea}
             disabled={isLoading}
           />
         </div>
 
         {/* Ativo */}
-        <div className="flex items-center">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
           <input
             type="checkbox"
             id="ativo"
             checked={formData.ativo ?? true}
             onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-            className="h-4 w-4 rounded"
+            style={{ width: '1rem', height: '1rem', borderRadius: 'var(--radius-xs)' }}
             disabled={isLoading}
           />
-          <label htmlFor="ativo" className="ml-2 text-sm font-medium">
+          <label htmlFor="ativo" style={{ ...commonStyles.label, marginBottom: 0 }}>
             ✅ Ativo
           </label>
         </div>
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-2 pt-4">
+      <div style={commonStyles.formActions}>
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition"
+          onMouseEnter={(e) => !isLoading && themeUtils.applyPrimaryButtonHover(e.currentTarget)}
+          onMouseLeave={(e) => !isLoading && themeUtils.resetPrimaryButton(e.currentTarget)}
+          style={{ ...commonStyles.button, ...commonStyles.buttonPrimary, flex: 1 }}
         >
           {isLoading ? '⏳ Salvando...' : '💾 Salvar'}
         </button>
@@ -168,7 +184,7 @@ export const PlanoSaudeForm: React.FC<PlanoSaudeFormProps> = ({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition"
+          style={{ ...commonStyles.button, backgroundColor: '#E0E0E0', color: 'var(--text-dark)', flex: 1, opacity: isLoading ? 0.6 : 1 }}
         >
           ❌ Cancelar
         </button>

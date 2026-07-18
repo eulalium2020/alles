@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Profissional } from '@/types'
 import { maskCPF, maskPhone, maskEmail, maskCRM, maskCurrency, maskPercentage } from '@/utils/inputMasks'
+import { commonStyles, themeUtils } from '@/styles/theme'
 
 /**
  * 📝 Props para o formulário de Profissional
@@ -99,178 +100,186 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg">
+    <form onSubmit={handleSubmit} style={commonStyles.formContainer}>
       {/* Erro de Submissão */}
       {submitError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3">
-          <span className="text-2xl">❌</span>
+        <div style={{ ...commonStyles.alertBanner, ...commonStyles.alertError }}>
+          <span style={{ fontSize: '1.5rem' }}>❌</span>
           <div>
-            <p className="font-semibold">Erro ao salvar</p>
-            <p className="text-sm mt-1">{submitError}</p>
+            <p style={{ fontWeight: '600', margin: 0 }}>Erro ao salvar</p>
+            <p style={{ fontSize: '0.85rem', marginTop: 'var(--spacing-xs)' }}>{submitError}</p>
           </div>
         </div>
       )}
 
       {/* Seção 1: Dados Pessoais */}
-      <div className="space-y-4 p-4 bg-white rounded-lg border-l-4 border-blue-500">
-        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-          <span className="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--primary-blue)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
             1
           </span>
           Dados Pessoais
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={commonStyles.formGrid}>
           {/* Nome */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">👤 Nome Completo *</label>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={commonStyles.label}>👤 Nome Completo *</label>
             <input
               type="text"
               value={formData.nome || ''}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
               onBlur={() => handleBlur('nome')}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => !errors.nome && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="Dr. João Silva"
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                errors.nome && touched.nome
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              style={{
+                ...commonStyles.input,
+                borderColor: errors.nome && touched.nome ? 'var(--error-red)' : 'var(--border-color)',
+              }}
               disabled={isLoading}
             />
             {errors.nome && touched.nome && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">⚠️ {errors.nome}</span>
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.nome}</span>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium mb-1">📧 Email *</label>
+            <label style={commonStyles.label}>📧 Email *</label>
             <input
               type="email"
               value={formData.email || ''}
               onChange={(e) => setFormData({ ...formData, email: maskEmail(e.target.value) })}
               onBlur={() => handleBlur('email')}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => !errors.email && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="dr@email.com"
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                errors.email && touched.email
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              style={{
+                ...commonStyles.input,
+                borderColor: errors.email && touched.email ? 'var(--error-red)' : 'var(--border-color)',
+              }}
               disabled={isLoading}
             />
             {errors.email && touched.email && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">⚠️ {errors.email}</span>
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.email}</span>
             )}
           </div>
 
           {/* CPF */}
           <div>
-            <label className="block text-sm font-medium mb-1">🆔 CPF *</label>
+            <label style={commonStyles.label}>🆔 CPF *</label>
             <input
               type="text"
               value={formData.cpf || ''}
               onChange={(e) => setFormData({ ...formData, cpf: maskCPF(e.target.value) })}
               onBlur={() => handleBlur('cpf')}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => !errors.cpf && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="000.000.000-00"
               maxLength="14"
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                errors.cpf && touched.cpf
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              style={{
+                ...commonStyles.input,
+                borderColor: errors.cpf && touched.cpf ? 'var(--error-red)' : 'var(--border-color)',
+              }}
               disabled={isLoading}
             />
             {errors.cpf && touched.cpf && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">⚠️ {errors.cpf}</span>
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.cpf}</span>
             )}
           </div>
 
           {/* Telefone */}
           <div>
-            <label className="block text-sm font-medium mb-1">📱 Telefone *</label>
+            <label style={commonStyles.label}>📱 Telefone *</label>
             <input
               type="tel"
               value={formData.telefone || ''}
               onChange={(e) => setFormData({ ...formData, telefone: maskPhone(e.target.value) })}
               onBlur={() => handleBlur('telefone')}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => !errors.telefone && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="(11) 99999-9999"
               maxLength="15"
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                errors.telefone && touched.telefone
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              style={{
+                ...commonStyles.input,
+                borderColor: errors.telefone && touched.telefone ? 'var(--error-red)' : 'var(--border-color)',
+              }}
               disabled={isLoading}
             />
             {errors.telefone && touched.telefone && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">⚠️ {errors.telefone}</span>
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.telefone}</span>
             )}
           </div>
         </div>
       </div>
 
       {/* Seção 2: Informações Profissionais */}
-      <div className="space-y-4 p-4 bg-white rounded-lg border-l-4 border-purple-500">
-        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-          <span className="bg-purple-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--secondary-teal)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--secondary-teal)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
             2
           </span>
           Informações Profissionais
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={commonStyles.formGrid}>
           {/* Órgão de Classe */}
           <div>
-            <label className="block text-sm font-medium mb-1">📜 Órgão de Classe *</label>
+            <label style={commonStyles.label}>📜 Órgão de Classe *</label>
             <input
               type="text"
               value={formData.crm || ''}
               onChange={(e) => setFormData({ ...formData, crm: maskCRM(e.target.value) })}
               onBlur={() => handleBlur('crm')}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => !errors.crm && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="123456/SP"
               maxLength="9"
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                errors.crm && touched.crm
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              style={{
+                ...commonStyles.input,
+                borderColor: errors.crm && touched.crm ? 'var(--error-red)' : 'var(--border-color)',
+              }}
               disabled={isLoading}
             />
             {errors.crm && touched.crm && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">⚠️ {errors.crm}</span>
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.crm}</span>
             )}
           </div>
 
           {/* Especialidade */}
           <div>
-            <label className="block text-sm font-medium mb-1">🏥 Especialidade *</label>
+            <label style={commonStyles.label}>🏥 Especialidade *</label>
             <input
               type="text"
               value={formData.especialidade || ''}
               onChange={(e) => setFormData({ ...formData, especialidade: e.target.value })}
               onBlur={() => handleBlur('especialidade')}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => !errors.especialidade && themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="Ex: Cardiologia"
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:outline-none focus:ring-2 transition ${
-                errors.especialidade && touched.especialidade
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              style={{
+                ...commonStyles.input,
+                borderColor: errors.especialidade && touched.especialidade ? 'var(--error-red)' : 'var(--border-color)',
+              }}
               disabled={isLoading}
             />
             {errors.especialidade && touched.especialidade && (
-              <span className="text-red-500 text-sm mt-1 flex items-center gap-1">⚠️ {errors.especialidade}</span>
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.especialidade}</span>
             )}
           </div>
 
           {/* Horários Atendimento */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">⏰ Horários de Atendimento</label>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={commonStyles.label}>⏰ Horários de Atendimento</label>
             <input
               type="text"
               value={formData.horariosAtendimento || ''}
               onChange={(e) => setFormData({ ...formData, horariosAtendimento: e.target.value })}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="Seg-Sex 08:00-18:00, Sab 09:00-13:00"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              style={commonStyles.input}
               disabled={isLoading}
             />
           </div>
@@ -278,22 +287,22 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
       </div>
 
       {/* Seção 3: Informações Financeiras */}
-      <div className="space-y-4 p-4 bg-white rounded-lg border-l-4 border-green-500">
-        <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-          <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">
+      <div style={{ ...commonStyles.formSection, padding: 'var(--spacing-md)', backgroundColor: 'var(--white)', borderRadius: 'var(--radius-sm)', borderLeft: '4px solid var(--success-green)' }}>
+        <h3 style={commonStyles.formSectionTitle}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', height: '1.5rem', borderRadius: '50%', backgroundColor: 'var(--success-green)', color: 'var(--white)', fontSize: '0.75rem', marginRight: 'var(--spacing-sm)' }}>
             3
           </span>
           Informações Financeiras
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div style={commonStyles.formGrid}>
           {/* Tipo de Pagamento */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1">💰 Tipo de Pagamento</label>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={commonStyles.label}>💰 Tipo de Pagamento</label>
             <select
               value={formData.tipoPagamento || 'FIXO_POR_CONSULTA'}
               onChange={(e) => setFormData({ ...formData, tipoPagamento: e.target.value as any })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              style={commonStyles.input}
               disabled={isLoading}
             >
               <option value="FIXO_POR_CONSULTA">💵 Fixo por Consulta</option>
@@ -304,7 +313,7 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
           {/* Valor Fixo */}
           <div>
-            <label className="block text-sm font-medium mb-1">💵 Valor Fixo por Consulta (R$)</label>
+            <label style={commonStyles.label}>💵 Valor Fixo por Consulta (R$)</label>
             <input
               type="text"
               value={formData.valorFixo ? maskCurrency(formData.valorFixo) : ''}
@@ -313,15 +322,17 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
                 const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
                 setFormData({ ...formData, valorFixo: numValue })
               }}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="R$ 0,00"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              style={commonStyles.input}
               disabled={isLoading}
             />
           </div>
 
           {/* Valor Consulta Particular */}
           <div>
-            <label className="block text-sm font-medium mb-1">💳 Valor Consulta Particular (R$)</label>
+            <label style={commonStyles.label}>💳 Valor Consulta Particular (R$)</label>
             <input
               type="text"
               value={formData.valorConsultaParticular ? maskCurrency(formData.valorConsultaParticular) : ''}
@@ -330,15 +341,17 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
                 const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
                 setFormData({ ...formData, valorConsultaParticular: numValue })
               }}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="R$ 0,00"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              style={commonStyles.input}
               disabled={isLoading}
             />
           </div>
 
           {/* Valor Consulta Plano */}
           <div>
-            <label className="block text-sm font-medium mb-1">🏥 Valor Consulta Plano (R$)</label>
+            <label style={commonStyles.label}>🏥 Valor Consulta Plano (R$)</label>
             <input
               type="text"
               value={formData.valorConsultaPlano ? maskCurrency(formData.valorConsultaPlano) : ''}
@@ -347,15 +360,17 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
                 const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
                 setFormData({ ...formData, valorConsultaPlano: numValue })
               }}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="R$ 0,00"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              style={commonStyles.input}
               disabled={isLoading}
             />
           </div>
 
           {/* Percentual Receita */}
           <div>
-            <label className="block text-sm font-medium mb-1">📊 Percentual Receita (%)</label>
+            <label style={commonStyles.label}>📊 Percentual Receita (%)</label>
             <input
               type="text"
               value={formData.percentualReceita ? maskPercentage(formData.percentualReceita) : ''}
@@ -364,16 +379,18 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
                 const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
                 setFormData({ ...formData, percentualReceita: numValue })
               }}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="0,00"
               maxLength="6"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              style={commonStyles.input}
               disabled={isLoading}
             />
           </div>
 
           {/* Desconto Clínica */}
           <div>
-            <label className="block text-sm font-medium mb-1">🏪 Desconto Clínica (%)</label>
+            <label style={commonStyles.label}>🏪 Desconto Clínica (%)</label>
             <input
               type="text"
               value={formData.descontoClinicaPercentual ? maskPercentage(formData.descontoClinicaPercentual) : ''}
@@ -382,24 +399,26 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
                 const numValue = cleaned ? parseFloat(cleaned) / 100 : 0
                 setFormData({ ...formData, descontoClinicaPercentual: numValue })
               }}
+              onFocus={(e) => themeUtils.applyInputFocus(e.target as HTMLInputElement)}
+              onMouseLeave={(e) => themeUtils.resetInputFocus(e.target as HTMLInputElement)}
               placeholder="0,00"
               maxLength="6"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              style={commonStyles.input}
               disabled={isLoading}
             />
           </div>
 
           {/* Ativo */}
-          <div className="flex items-center gap-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
             <input
               type="checkbox"
               id="ativo"
               checked={formData.ativo ?? true}
               onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-              className="h-4 w-4 rounded"
+              style={{ width: '1rem', height: '1rem', borderRadius: 'var(--radius-xs)' }}
               disabled={isLoading}
             />
-            <label htmlFor="ativo" className="text-sm font-medium">
+            <label htmlFor="ativo" style={commonStyles.label}>
               ✅ Profissional Ativo
             </label>
           </div>
@@ -407,11 +426,13 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-3 pt-4 border-t">
+      <div style={commonStyles.formActions}>
         <button
           type="submit"
           disabled={isLoading}
-          className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold py-3 px-4 rounded-lg transition shadow-md hover:shadow-lg"
+          onMouseEnter={(e) => !isLoading && themeUtils.applyPrimaryButtonHover(e.currentTarget)}
+          onMouseLeave={(e) => !isLoading && themeUtils.resetPrimaryButton(e.currentTarget)}
+          style={{ ...commonStyles.button, ...commonStyles.buttonPrimary, flex: 1 }}
         >
           {isLoading ? '⏳ Salvando...' : '💾 Salvar Profissional'}
         </button>
@@ -419,7 +440,7 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="flex-1 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-800 font-semibold py-3 px-4 rounded-lg transition"
+          style={{ ...commonStyles.button, backgroundColor: '#E0E0E0', color: 'var(--text-dark)', flex: 1, opacity: isLoading ? 0.6 : 1 }}
         >
           ❌ Cancelar
         </button>
