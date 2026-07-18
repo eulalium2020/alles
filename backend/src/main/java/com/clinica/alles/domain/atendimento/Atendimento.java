@@ -35,8 +35,14 @@ public class Atendimento {
     @JoinColumn(name = "profissional_id", nullable = false)
     private Profissional profissional;
 
-    @Column(name = "data_inicio", nullable = false)
-    private LocalDateTime dataInicio;
+    @Column(name = "tipo_atendimento", nullable = false, length = 50)
+    private String tipoAtendimento = "PRESENCIAL"; // PRESENCIAL, TELEMEDICINA
+
+    @Column(nullable = false, length = 50)
+    private String status = "AGENDADO"; // AGENDADO, REALIZADO, CANCELADO, NAO_COMPARECEU
+
+    @Column(name = "data_hora", nullable = false)
+    private LocalDateTime dataHora;
 
     @Column(name = "data_fim")
     private LocalDateTime dataFim;
@@ -47,11 +53,23 @@ public class Atendimento {
     @Column(name = "notas_consulta", columnDefinition = "TEXT")
     private String notasConsulta;
 
+    @Column(columnDefinition = "TEXT")
+    private String anotacoes;
+
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
+
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
 
     @PrePersist
     protected void onCreate() {
         dataCriacao = LocalDateTime.now();
+        dataAtualizacao = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataAtualizacao = LocalDateTime.now();
     }
 }

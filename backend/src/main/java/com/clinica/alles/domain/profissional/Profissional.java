@@ -53,6 +53,9 @@ public class Profissional {
     @Column(name = "tipo_pagamento")
     private TipoPagamento tipoPagamento;
 
+    @Column(name = "valor_fixo", precision = 10, scale = 2)
+    private BigDecimal valorFixo;
+
     @Column(name = "valor_consulta_particular", precision = 10, scale = 2)
     private BigDecimal valorConsultaParticular;
 
@@ -65,8 +68,14 @@ public class Profissional {
     @Column(name = "desconto_clinica_percentual", precision = 5, scale = 2, nullable = false)
     private BigDecimal descontoClinicaPercentual = new BigDecimal("20.00");
 
+    @Column(name = "horarios_atendimento", length = 255)
+    private String horariosAtendimento;
+
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
+
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
 
     @Column(nullable = false)
     private Boolean ativo = true;
@@ -74,5 +83,11 @@ public class Profissional {
     @PrePersist
     protected void onCreate() {
         dataCadastro = LocalDateTime.now();
+        dataAtualizacao = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataAtualizacao = LocalDateTime.now();
     }
 }

@@ -93,7 +93,7 @@ public class AtendimentoService {
         Atendimento atendimento = new Atendimento();
         atendimento.setProfissional(profissional);
         atendimento.setPaciente(paciente);
-        atendimento.setDataInicio(dataHora);
+        atendimento.setDataHora(dataHora);
         
         Atendimento saved = atendimentoRepository.save(atendimento);
         log.info("Atendimento agendado com sucesso: ID {}", saved.getId());
@@ -199,7 +199,7 @@ public class AtendimentoService {
         }
 
         if (dataHora != null) {
-            atendimento.setDataInicio(dataHora);
+            atendimento.setDataHora(dataHora);
         }
 
         Atendimento updated = atendimentoRepository.save(atendimento);
@@ -224,7 +224,7 @@ public class AtendimentoService {
         LocalDateTime fimJanela = dataHora.plusHours(1);
         
         return atendimentosProfissional.stream()
-                .filter(a -> a.getDataInicio() != null && a.getDataFim() == null)
-                .noneMatch(a -> !a.getDataInicio().isBefore(inicioJanela) && !a.getDataInicio().isAfter(fimJanela));
+                .filter(a -> a.getDataHora() != null && a.getDataFim() == null)
+                .noneMatch(a -> !a.getDataHora().isBefore(inicioJanela) && !a.getDataHora().isAfter(fimJanela));
     }
 }

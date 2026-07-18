@@ -51,7 +51,7 @@ public class AtendimentoResponse {
                 .id(atendimento.getId())
                 .profissionalId(atendimento.getProfissional().getId())
                 .pacienteId(atendimento.getPaciente().getId())
-                .dataHora(atendimento.getDataInicio().format(formatter))
+                .dataHora(atendimento.getDataHora().format(formatter))
                 .tipoAtendimento("PRESENCIAL")
                 .status(status)
                 .anotacoes(atendimento.getNotasConsulta())

@@ -85,11 +85,20 @@ public class Paciente {
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
+
     @Column(nullable = false)
     private Boolean ativo = true;
 
     @PrePersist
     protected void onCreate() {
         dataCadastro = LocalDateTime.now();
+        dataAtualizacao = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        dataAtualizacao = LocalDateTime.now();
     }
 }
