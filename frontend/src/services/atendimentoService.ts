@@ -60,13 +60,22 @@ export class AtendimentoService implements IAtendimentoService {
    */
   async getAll(page: number, pageSize: number): Promise<PaginatedResponse<AtendimentoComDetalhes>> {
     try {
-      const response = await this.apiClient.get<PaginatedResponse<AtendimentoComDetalhes>>(
+      const response = await this.apiClient.get<any>(
         '/atendimentos',
         {
-          params: { page, pageSize },
+          params: { page, size: pageSize }, // Spring espera "size", não "pageSize"
         },
       )
-      return response.data
+      // Normalizar campos do Spring Page para o formato PaginatedResponse
+      const data = response.data
+      return {
+        content: data.content,
+        totalElements: data.totalElements,
+        totalPages: data.totalPages,
+        currentPage: data.number,   // Spring serializa como "number"
+        pageSize: data.size,        // Spring serializa como "size"
+        isLast: data.last,          // Spring serializa como "last"
+      }
     } catch (error) {
       throw this.handleError(error)
     }
@@ -91,7 +100,12 @@ export class AtendimentoService implements IAtendimentoService {
     data: Omit<Atendimento, 'id' | 'criadoEm' | 'atualizadoEm'>,
   ): Promise<AtendimentoComDetalhes> {
     try {
-      const response = await this.apiClient.post<AtendimentoComDetalhes>('/atendimentos', data)
+      // Endpoint correto é /agendar com apenas os campos que o backend espera
+      const response = await this.apiClient.post<AtendimentoComDetalhes>('/atendimentos/agendar', {
+        profissionalId: data.profissionalId,
+        pacienteId: data.pacienteId,
+        dataHora: data.dataHora,
+      })
       return response.data
     } catch (error) {
       throw this.handleError(error)
@@ -105,7 +119,11 @@ export class AtendimentoService implements IAtendimentoService {
     try {
       const response = await this.apiClient.put<AtendimentoComDetalhes>(
         `/atendimentos/${id}`,
-        data,
+        {
+          profissionalId: data.profissionalId,
+          pacienteId: data.pacienteId,
+          dataHora: data.dataHora,
+        },
       )
       return response.data
     } catch (error) {
@@ -129,9 +147,10 @@ export class AtendimentoService implements IAtendimentoService {
    */
   async registrarPresenca(id: number, anotacoes?: string): Promise<AtendimentoComDetalhes> {
     try {
-      const response = await this.apiClient.patch<AtendimentoComDetalhes>(
-        `/atendimentos/${id}/presenca`,
-        { anotacoes },
+      // Método e URL corretos: POST .../registrar (não PATCH .../presenca)
+      const response = await this.apiClient.post<AtendimentoComDetalhes>(
+        `/atendimentos/${id}/registrar`,
+        { anotacoes: anotacoes ?? '' },
       )
       return response.data
     } catch (error) {
@@ -142,10 +161,12 @@ export class AtendimentoService implements IAtendimentoService {
   /**
    * ❌ Cancelar atendimento
    */
-  async cancelar(id: number): Promise<AtendimentoComDetalhes> {
+  async cancelar(id: number, motivo?: string): Promise<AtendimentoComDetalhes> {
     try {
-      const response = await this.apiClient.patch<AtendimentoComDetalhes>(
+      // Método e URL corretos: POST .../cancelar com body {motivo}
+      const response = await this.apiClient.post<AtendimentoComDetalhes>(
         `/atendimentos/${id}/cancelar`,
+        { motivo: motivo ?? '' },
       )
       return response.data
     } catch (error) {

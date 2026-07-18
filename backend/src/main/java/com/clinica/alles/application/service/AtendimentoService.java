@@ -147,6 +147,67 @@ public class AtendimentoService {
     }
 
     /**
+     * Remove um atendimento pelo ID.
+     *
+     * @param id o ID do atendimento
+     * @throws ResourceNotFoundException se não encontrar
+     */
+    @Transactional
+    public void delete(Long id) {
+        log.info("Deletando atendimento: {}", id);
+        if (!atendimentoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Atendimento não encontrado com ID: " + id);
+        }
+        atendimentoRepository.deleteById(id);
+    }
+
+    /**
+     * Atualiza os dados de um atendimento.
+     *
+     * @param id o ID do atendimento
+     * @param profId novo ID do profissional (ou null para manter)
+     * @param pacId novo ID do paciente (ou null para manter)
+     * @param dataHora nova data/hora (ou null para manter)
+     * @return o atendimento atualizado
+     */
+    @Transactional
+    public Atendimento update(Long id, Long profId, Long pacId, LocalDateTime dataHora) {
+        log.info("Atualizando atendimento: {}", id);
+
+        Atendimento atendimento = findById(id);
+
+        if (dataHora != null && dataHora.isBefore(LocalDateTime.now())) {
+            throw new ValidationException("Data e hora do atendimento deve ser no futuro");
+        }
+
+        if (profId != null && !profId.equals(atendimento.getProfissional().getId())) {
+            Profissional profissional = profissionalRepository.findById(profId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Profissional não encontrado com ID: " + profId));
+            if (!profissional.getAtivo()) {
+                throw new ValidationException("Profissional não está ativo");
+            }
+            atendimento.setProfissional(profissional);
+        }
+
+        if (pacId != null && !pacId.equals(atendimento.getPaciente().getId())) {
+            Paciente paciente = pacienteRepository.findById(pacId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrado com ID: " + pacId));
+            if (!paciente.getAtivo()) {
+                throw new ValidationException("Paciente não está ativo");
+            }
+            atendimento.setPaciente(paciente);
+        }
+
+        if (dataHora != null) {
+            atendimento.setDataInicio(dataHora);
+        }
+
+        Atendimento updated = atendimentoRepository.save(atendimento);
+        log.info("Atendimento atualizado com sucesso: ID {}", updated.getId());
+        return updated;
+    }
+
+    /**
      * Verifica se um profissional está disponível em uma data e hora específicas.
      * A disponibilidade é definida como não ter outro atendimento agendado no mesmo horário.
      *

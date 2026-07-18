@@ -80,6 +80,55 @@ public class AtendimentoController {
     }
 
     /**
+     * Atualiza um atendimento.
+     *
+     * @param id ID do atendimento
+     * @param request novos dados do atendimento
+     * @return atendimento atualizado
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA', 'PROFISSIONAL')")
+    @Operation(summary = "Atualizar atendimento", description = "Atualiza os dados de um atendimento")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Atendimento atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<AtendimentoResponse> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody AgendarRequest request) {
+        log.info("Atualizando atendimento: {}", id);
+        Atendimento atendimento = atendimentoService.update(
+                id,
+                request.getProfissionalId(),
+                request.getPacienteId(),
+                request.getDataHora()
+        );
+        return ResponseEntity.ok(AtendimentoResponse.fromEntity(atendimento));
+    }
+
+    /**
+     * Remove um atendimento.
+     *
+     * @param id ID do atendimento
+     * @return sem conteúdo
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLINICA')")
+    @Operation(summary = "Deletar atendimento", description = "Remove um atendimento pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Atendimento removido com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Atendimento não encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado")
+    })
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        log.info("Deletando atendimento: {}", id);
+        atendimentoService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * Agenda um novo atendimento.
      *
      * @param request dados do agendamento
