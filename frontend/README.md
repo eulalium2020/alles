@@ -4,7 +4,7 @@ Frontend web do ALLES com **React 18 + TypeScript + Vite** e **Design System Hea
 
 ## Status atual
 
-**Atualizado em 18/07/2026:** Design system healthcare 100% implementado com 14 componentes refatorados, dark mode completo, responsividade total (mobile/tablet/desktop) e paleta profissional.
+**Atualizado em 18/07/2026:** Design system healthcare 100% implementado + formulários com NOMES (name-based selection).
 
 ## Tecnologias
 
@@ -69,6 +69,39 @@ Frontend web do ALLES com **React 18 + TypeScript + Vite** e **Design System Hea
 - **Espaçamento**: 6 níveis (xs até 2xl)
 - **Border Radius**: 4px (moderno, profissional)
 
+## ✅ Formulários com NOMES (Fase 17)
+
+### Backend - 8 novos endpoints
+- `GET /profissionais/nomes` → Lista com formato "Nome (CRM/Órgão)"
+- `GET /pacientes/nomes` → Lista com formato "Nome (CPF)"
+- `GET /especialidades/nomes` → Lista de especialidades
+- `GET /planos-saude/nomes` → Lista de planos
+- Variantes `/by-nome/{nome}` para busca individual
+
+### Frontend - Serviços e Hooks
+- **`src/services/nomeService.ts`** (4.4KB)
+  - 7 métodos para endpoints de nomes
+  - Retorna dados com formato display "Nome (ID)"
+  
+- **`src/hooks/useNomes.ts`** (5.4KB)
+  - `useProfissionaisNomes()` - Hook para profissionais
+  - `usePacientesNomes()` - Hook para pacientes
+  - `useEspecialidadesNomes()` - Hook para especialidades
+  - `usePlanosNomes()` - Hook para planos
+  - Loading, error, data states inclusos
+
+### Formulários Atualizados
+- **AtendimentoForm**: Selects para profissional/paciente
+- **ProfissionalForm**: Select para especialidade
+- **PacienteForm**: Checkboxes para planos de saúde
+
+### UX Melhorada
+- Nomes intuitivos (sem memorizar IDs)
+- Display com informações adicionais (CPF, CRM, etc)
+- Conversão automática de nome → ID
+- Menos erros de entrada
+- Interface profissional
+
 ## Funcionalidades implementadas
 
 - Login e sessão com JWT
@@ -81,6 +114,12 @@ Frontend web do ALLES com **React 18 + TypeScript + Vite** e **Design System Hea
 - Design profissional healthcare
 - Validação de formulários com error handling
 - Input masks (CPF, phone, email, currency)
+- **✅ Formulários com NOMES**: Cadastro/edição usando nomes, selects com "Nome (CPF/CRM)", conversão automática de nome → ID
+- **🎯 Name-based Service**: nomeService.ts com 7 métodos para endpoints /nomes
+- **🪝 Custom Hooks**: useNomes.ts com 4 hooks para lazy-loading de listas
+- **✅ Formulários com NOMES**: Cadastro/edição usando nomes, selects com "Nome (CPF/CRM)", conversão automática de nome → ID
+- **🎯 Name-based Service**: nomeService.ts com 7 métodos para endpoints /nomes
+- **🪝 Custom Hooks**: useNomes.ts com 4 hooks para lazy-loading de listas
 
 ## Rotas da aplicação
 

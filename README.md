@@ -2,8 +2,8 @@
 
 Sistema de gestão para clínicas com backend em Spring Boot, frontend em React/TypeScript com design system healthcare profissional e app mobile em React Native (Expo).
 
-**Status atual (18/07/2026):** **16/16 fases concluídas** - Design system healthcare 100% implementado com dark mode, responsividade total e 14 componentes refatorados.  
-Consulte o detalhamento em [`STATUS_PROJETO.md`](./STATUS_PROJETO.md).
+**Status atual (18/07/2026):** **17/17 fases concluídas** - Design system healthcare + formulários com NOMES implementados.  
+Consulte o detalhamento em [`STATUS_PROJETO.md`](./STATUS_PROJETO.md) ou [`PROJECT_COMPLETION_SUMMARY.md`](./PROJECT_COMPLETION_SUMMARY.md).
 
 ---
 
@@ -25,6 +25,7 @@ Consulte o detalhamento em [`STATUS_PROJETO.md`](./STATUS_PROJETO.md).
 - **🎨 Design System Healthcare**: Paleta profissional (#0A6992, #45B69C), tipografia (Open Sans + Montserrat), 14 componentes refatorados, dark mode com localStorage, responsividade mobile-first
 - **🌓 Dark Mode**: Toggle com botão flutuante, detecção de preferência do sistema, persistence
 - **📱 Responsividade Total**: Mobile (<768px), Tablet (768-1024px), Desktop (>1024px)
+- **✅ Formulários com NOMES**: Cadastro/edição usando nomes ao invés de IDs, selects com display "Nome (CPF/CRM)", conversão automática de nome → ID
 
 ### Mobile (React Native + Expo)
 - App em `mobile/` com autenticação JWT

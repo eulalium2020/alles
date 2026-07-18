@@ -9,7 +9,7 @@
 
 O projeto possui backend, frontend web com design system healthcare profissional e canal mobile funcionais, com autenticação JWT, CRUD dos módulos principais, migrações Flyway, testes expandidos, dark mode, responsividade total e pipeline de deploy.
 
-**Progresso geral estimado:** **16/16 fases principais concluídas** (100%).
+**Progresso geral estimado:** **17/17 fases principais concluídas** (100%).
 
 ---
 
@@ -33,6 +33,7 @@ O projeto possui backend, frontend web com design system healthcare profissional
 | 14 | Canal mobile (React Native) | ✅ Concluída |
 | 15 | Deploy e CI/CD de produção | ✅ Concluída |
 | 16 | Design System Healthcare Profissional | ✅ Concluída |
+| 17 | Formulários com NOMES (name-based selection) | ✅ Concluída |
 
 ---
 
@@ -83,7 +84,7 @@ O projeto possui backend, frontend web com design system healthcare profissional
 - Suíte E2E base com Cypress (`frontend/cypress`)
 - Pipeline CI validando lint/type-check/test/build
 
-### 🎨 Design System Healthcare (NOVA FASE 16 - CONCLUÍDA)
+### 🎨 Design System Healthcare (FASE 16 - CONCLUÍDA)
 - **Paleta de Cores Profissional**: 6 cores principais (blue #0A6992, teal #45B69C, green, red, yellow, info)
 - **Tipografia**: Open Sans (body) + Montserrat (headings) com hierarquia clara
 - **14 Componentes Refatorados**:
@@ -98,6 +99,23 @@ O projeto possui backend, frontend web com design system healthcare profissional
 - **Acessibilidade**: WCAG 2.1 AA compliant (contrast, focus states, keyboard navigation)
 - **Testes**: designSystemTests.ts (automático) + visualTestGuide.ts (manual)
 - **CSS Variables**: 40+ variáveis, 0% Tailwind classes
+
+### ✅ Formulários com NOMES (FASE 17 - CONCLUÍDA)
+- **Backend - 8 novos endpoints**:
+  - `GET /profissionais/nomes` → Lista com formato "Nome (CRM/Órgão)"
+  - `GET /pacientes/nomes` → Lista com formato "Nome (CPF)"
+  - `GET /especialidades/nomes` → Lista de especialidades
+  - `GET /planos-saude/nomes` → Lista de planos
+  - `GET /profissionais/by-nome/{nome}`, `/pacientes/by-nome/{nome}`, etc
+- **Frontend - 2 arquivos criados**:
+  - `src/services/nomeService.ts` (4.4KB) - Serviço centralizado para endpoints de nomes
+  - `src/hooks/useNomes.ts` (5.4KB) - 4 Hooks customizados (useProfissionaisNomes, usePacientesNomes, useEspecialidadesNomes, usePlanosNomes)
+- **Formulários atualizados**:
+  - **AtendimentoForm**: Selects para profissional/paciente com display "Nome (CRM)" / "Nome (CPF)"
+  - **ProfissionalForm**: Select para especialidade
+  - **PacienteForm**: Checkboxes para planos de saúde (nomes)
+- **Fluxo**: Usuário seleciona nome → Frontend converte para ID → Backend valida → Salva no banco
+- **UX**: 100% melhorada, nomes intuitivos, menos erros de entrada
 
 ---
 
