@@ -30,6 +30,16 @@ export interface TokenPayload {
   exp: number
 }
 
+/* 📋 DTOs de Nome-Based Selection */
+export interface NomeResponse {
+  id: number
+  nome: string
+  display: string // "Nome (CPF/CRM/etc)"
+  crm?: string // Para profissionais
+  cpf?: string // Para pacientes
+  operadora?: string // Para planos de saúde
+}
+
 /* 👨‍⚕️ Profissional */
 export type TipoPagamento = 'FIXO_POR_CONSULTA' | 'PERCENTUAL_RECEITA' | 'AMBOS'
 
@@ -50,6 +60,24 @@ export interface Profissional extends Usuario {
   percentualReceita?: number
   descontoClinicaPercentual?: number
   horariosAtendimento?: string
+}
+
+/* 📋 DTOs e Payloads para Backend */
+export interface ProfissionalPayload extends Omit<Profissional, 'id' | 'criadoEm' | 'atualizadoEm' | 'perfil'> {
+  nome: string
+  email: string
+  cpf: string
+  telefone: string
+  crm: string
+  especialidadeId?: number // ID-based
+  especialidade?: string // Name-based
+  tipoPagamento: string
+  valorFixo?: number
+  valorConsultaParticular?: number
+  valorConsultaPlano?: number
+  percentualReceita?: number
+  descontoClinicaPercentual?: number
+  ativo?: boolean
 }
 
 /* 🏥 Paciente */
@@ -80,6 +108,25 @@ export interface Paciente extends Usuario {
   historicoAtendimentos?: number
 }
 
+export interface PacientePayload extends Omit<Paciente, 'id' | 'criadoEm' | 'atualizadoEm' | 'perfil'> {
+  nome: string
+  email: string
+  cpf: string
+  telefone: string
+  dataNascimento: string
+  endereco?: string
+  numero?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
+  cep?: string
+  alergias?: string
+  planosSaudeIds?: number[] // ID-based
+  planosSaudeNomes?: string[] // Name-based
+  ativo?: boolean
+}
+
 /* 📅 Atendimento */
 export type TipoAtendimento = 'PRESENCIAL' | 'TELEMEDICINA'
 export type StatusAtendimento = 'AGENDADO' | 'REALIZADO' | 'CANCELADO' | 'NAO_COMPARECEU'
@@ -94,6 +141,13 @@ export interface Atendimento {
   anotacoes?: string
   criadoEm: string
   atualizadoEm: string
+}
+
+export interface AtendimentoPayload extends Omit<Atendimento, 'id' | 'criadoEm' | 'atualizadoEm'> {
+  profissionalId?: number // ID-based
+  pacienteId?: number // ID-based
+  profissionalNome?: string // Name-based
+  pacienteNome?: string // Name-based
 }
 
 export interface AtendimentoComDetalhes extends Atendimento {

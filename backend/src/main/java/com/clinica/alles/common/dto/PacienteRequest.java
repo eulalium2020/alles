@@ -7,15 +7,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * DTO para requisição de criação/atualização de paciente.
+ * Suporta ID-based (planosSaudeIds) e name-based (planosSaudeNomes) selection.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PacienteRequest {
+
+    @NotBlank(message = "Nome é obrigatório")
+    private String nome;
 
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email deve ser válido")
@@ -31,6 +36,7 @@ public class PacienteRequest {
     @NotBlank(message = "Sexo é obrigatório")
     private String sexo;
 
+    @NotBlank(message = "Telefone é obrigatório")
     @Pattern(regexp = "^\\(\\d{2}\\)\\s?9?\\d{4}-\\d{4}$", message = "Telefone deve estar em formato válido")
     private String telefone;
 
@@ -46,4 +52,10 @@ public class PacienteRequest {
 
     private String alergias;
     private String antecedenteMedicos;
+
+    // Planos de saúde: pode vir como IDs ou como nomes
+    private List<Long> planosSaudeIds;
+    private List<String> planosSaudeNomes; // Nomes dos planos (name-based)
+
+    private boolean ativo = true;
 }
