@@ -1,15 +1,15 @@
 # 📊 STATUS DO PROJETO ALLES
 
-**Atualizado em:** 12/07/2026  
-**Versão de referência:** v1.0.x
+**Atualizado em:** 18/07/2026  
+**Versão de referência:** v1.0.0 - Healthcare Edition
 
 ---
 
 ## Resumo executivo
 
-O projeto possui backend, frontend web e canal mobile funcionais, com autenticação JWT, CRUD dos módulos principais, migrações Flyway, expansão de testes e pipeline de deploy.
+O projeto possui backend, frontend web com design system healthcare profissional e canal mobile funcionais, com autenticação JWT, CRUD dos módulos principais, migrações Flyway, testes expandidos, dark mode, responsividade total e pipeline de deploy.
 
-**Progresso geral estimado:** **15/15 fases principais concluídas** (100%).
+**Progresso geral estimado:** **16/16 fases principais concluídas** (100%).
 
 ---
 
@@ -32,6 +32,7 @@ O projeto possui backend, frontend web e canal mobile funcionais, com autentica�
 | 13 | Estratégia e expansão de testes | ✅ Concluída |
 | 14 | Canal mobile (React Native) | ✅ Concluída |
 | 15 | Deploy e CI/CD de produção | ✅ Concluída |
+| 16 | Design System Healthcare Profissional | ✅ Concluída |
 
 ---
 
@@ -81,6 +82,22 @@ O projeto possui backend, frontend web e canal mobile funcionais, com autentica�
 - Testes unitários em serviços/hooks/componentes (Vitest)
 - Suíte E2E base com Cypress (`frontend/cypress`)
 - Pipeline CI validando lint/type-check/test/build
+
+### 🎨 Design System Healthcare (NOVA FASE 16 - CONCLUÍDA)
+- **Paleta de Cores Profissional**: 6 cores principais (blue #0A6992, teal #45B69C, green, red, yellow, info)
+- **Tipografia**: Open Sans (body) + Montserrat (headings) com hierarquia clara
+- **14 Componentes Refatorados**:
+  - Navegação: Header, Sidebar
+  - Display: Cards, StatusBadge, ThemeToggle
+  - Listas: AtendimentoList, PacienteList, ProfissionalList
+  - Formulários: PacienteForm, ProfissionalForm, AtendimentoForm, EspecialidadeForm, PlanoSaudeForm
+- **Dark Mode**: CSS variables com @media + [data-theme], manual toggle, localStorage persistence
+- **Responsividade**: Mobile-first (mobile <768px, tablet 768-1024px, desktop >1024px)
+- **Espaçamento/Bordas/Sombras**: Sistema de 6 níveis para hierarchy visual
+- **Transições**: 0.2s suaves em todos elementos interativos
+- **Acessibilidade**: WCAG 2.1 AA compliant (contrast, focus states, keyboard navigation)
+- **Testes**: designSystemTests.ts (automático) + visualTestGuide.ts (manual)
+- **CSS Variables**: 40+ variáveis, 0% Tailwind classes
 
 ---
 

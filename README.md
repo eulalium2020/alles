@@ -1,8 +1,8 @@
 # 🏥 ALLES - Sistema de Gestão de Clínica
 
-Sistema de gestão para clínicas com backend em Spring Boot, frontend em React/TypeScript e app mobile em React Native (Expo).
+Sistema de gestão para clínicas com backend em Spring Boot, frontend em React/TypeScript com design system healthcare profissional e app mobile em React Native (Expo).
 
-**Status atual (12/07/2026):** **15/15 fases concluídas** com testes expandidos, canal mobile e deploy/CI-CD.  
+**Status atual (18/07/2026):** **16/16 fases concluídas** - Design system healthcare 100% implementado com dark mode, responsividade total e 14 componentes refatorados.  
 Consulte o detalhamento em [`STATUS_PROJETO.md`](./STATUS_PROJETO.md).
 
 ---
@@ -22,6 +22,9 @@ Consulte o detalhamento em [`STATUS_PROJETO.md`](./STATUS_PROJETO.md).
 - Serviços HTTP com interceptação de token JWT
 - Hooks e estado global com Zustand
 - Testes unitários (Vitest) e E2E (Cypress)
+- **🎨 Design System Healthcare**: Paleta profissional (#0A6992, #45B69C), tipografia (Open Sans + Montserrat), 14 componentes refatorados, dark mode com localStorage, responsividade mobile-first
+- **🌓 Dark Mode**: Toggle com botão flutuante, detecção de preferência do sistema, persistence
+- **📱 Responsividade Total**: Mobile (<768px), Tablet (768-1024px), Desktop (>1024px)
 
 ### Mobile (React Native + Expo)
 - App em `mobile/` com autenticação JWT
