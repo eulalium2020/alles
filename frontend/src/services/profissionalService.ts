@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
 import { Profissional, PaginatedResponse, HttpException } from '@/types'
+import { adaptSpringPage } from '@utils/paginationAdapter'
 
 /**
  * 👨‍⚕️ Interface para o serviço de Profissionais (SOLID - Interface Segregation)
@@ -58,13 +59,10 @@ export class ProfissionalService implements IProfissionalService {
    */
   async getAll(page: number, pageSize: number): Promise<PaginatedResponse<Profissional>> {
     try {
-      const response = await this.apiClient.get<PaginatedResponse<Profissional>>(
-        '/profissionais',
-        {
-          params: { page, pageSize },
-        },
-      )
-      return response.data
+      const response = await this.apiClient.get<any>('/profissionais', {
+        params: { page, size: pageSize }, // Spring espera "size"
+      })
+      return adaptSpringPage(response.data)
     } catch (error) {
       throw this.handleError(error)
     }

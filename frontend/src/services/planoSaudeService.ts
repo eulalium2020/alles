@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
 import { HttpException, PaginatedResponse, PlanoSaude } from '@/types'
+import { adaptSpringPage } from '@utils/paginationAdapter'
 
 export interface IPlanoSaudeService {
   getAll(page: number, size: number): Promise<PaginatedResponse<PlanoSaude>>
@@ -28,11 +29,11 @@ export class PlanoSaudeService implements IPlanoSaudeService {
 
   async getAll(page: number, size: number): Promise<PaginatedResponse<PlanoSaude>> {
     try {
-      const response = await this.apiClient.get<PaginatedResponse<PlanoSaude>>(
+      const response = await this.apiClient.get<any>(
         API_CONFIG.ENDPOINTS.PLANOS_SAUDE,
         { params: { page, size } },
       )
-      return response.data
+      return adaptSpringPage(response.data)
     } catch (error) {
       throw this.handleError(error)
     }

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { API_CONFIG, TIMEOUTS } from '@constants/api'
 import { Atendimento, AtendimentoComDetalhes, PaginatedResponse, HttpException } from '@/types'
+import { adaptSpringPage } from '@utils/paginationAdapter'
 
 /**
  * 📅 Interface para o serviço de Atendimentos (SOLID - Interface Segregation)
@@ -66,16 +67,7 @@ export class AtendimentoService implements IAtendimentoService {
           params: { page, size: pageSize }, // Spring espera "size", não "pageSize"
         },
       )
-      // Normalizar campos do Spring Page para o formato PaginatedResponse
-      const data = response.data
-      return {
-        content: data.content,
-        totalElements: data.totalElements,
-        totalPages: data.totalPages,
-        currentPage: data.number,   // Spring serializa como "number"
-        pageSize: data.size,        // Spring serializa como "size"
-        isLast: data.last,          // Spring serializa como "last"
-      }
+      return adaptSpringPage(response.data)
     } catch (error) {
       throw this.handleError(error)
     }

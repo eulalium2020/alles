@@ -1,4 +1,5 @@
 import React from 'react'
+import { X } from 'lucide-react'
 import { AtendimentoComDetalhes } from '@/types'
 import { AtendimentoForm } from './AtendimentoForm'
 
@@ -14,7 +15,7 @@ interface AtendimentoModalProps {
 }
 
 /**
- * 🔲 Modal para agendar/editar atendimento
+ * 🔲 Modal elegante para agendar/editar atendimento
  */
 export const AtendimentoModal: React.FC<AtendimentoModalProps> = ({
   isOpen,
@@ -26,27 +27,34 @@ export const AtendimentoModal: React.FC<AtendimentoModalProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">
-            {atendimento ? 'Editar Atendimento' : 'Novo Atendimento'}
-          </h2>
+    <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all">
+        {/* Header */}
+        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center border-b border-blue-800">
+          <div>
+            <h2 className="text-2xl font-bold text-white">
+              {atendimento ? '✏️ Editar Atendimento' : '📅 Novo Agendamento'}
+            </h2>
+            <p className="text-blue-100 text-sm mt-1">Preencha os dados abaixo com atenção</p>
+          </div>
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="text-gray-500 hover:text-gray-700 font-bold text-xl disabled:opacity-50"
+            className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg disabled:opacity-50 transition"
           >
-            ✕
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        <AtendimentoForm
-          initialData={atendimento}
-          onSubmit={onSubmit}
-          onCancel={onClose}
-          isLoading={isLoading}
-        />
+        {/* Body */}
+        <div className="p-6">
+          <AtendimentoForm
+            initialData={atendimento}
+            onSubmit={onSubmit}
+            onCancel={onClose}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   )
