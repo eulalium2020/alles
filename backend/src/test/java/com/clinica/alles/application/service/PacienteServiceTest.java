@@ -149,18 +149,28 @@ class PacienteServiceTest {
     @Test
     @DisplayName("Should update patient successfully")
     void testUpdate_Success() {
+        Usuario usuarioAtualizado = new Usuario();
+        usuarioAtualizado.setNome("Paciente Atualizado");
+        usuarioAtualizado.setEmail("paciente.atualizado@test.com");
+        usuarioAtualizado.setCpf("12345678901");
+        usuarioAtualizado.setTelefone("11999999999");
+        usuarioAtualizado.setAtivo(false);
+
         Paciente pacienteAtualizado = new Paciente();
-        pacienteAtualizado.setUsuario(usuario);
+        pacienteAtualizado.setUsuario(usuarioAtualizado);
         pacienteAtualizado.setCpf("12345678901");
         pacienteAtualizado.setDataNascimento(LocalDate.of(1990, 1, 15));
         pacienteAtualizado.setTelefone("11999999999");
+        pacienteAtualizado.setAtivo(false);
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
-        when(pacienteRepository.save(any(Paciente.class))).thenReturn(paciente);
+        when(pacienteRepository.save(any(Paciente.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Paciente result = pacienteService.update(1L, pacienteAtualizado);
 
         assertNotNull(result);
+        assertFalse(result.getAtivo());
+        assertFalse(result.getUsuario().getAtivo());
         verify(pacienteRepository, times(1)).save(any(Paciente.class));
     }
 

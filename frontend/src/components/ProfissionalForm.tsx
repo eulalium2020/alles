@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Profissional } from '@/types'
-import { maskCPF, maskPhone, maskEmail, maskCRM, maskCurrency, maskPercentage } from '@/utils/inputMasks'
+import { maskCPF, maskPhone, maskEmail, maskCRM, maskCurrency, maskPercentage, unmaskCPF, unmaskPhone } from '@/utils/inputMasks'
 import { commonStyles, themeUtils } from '@/styles/theme'
 import { useEspecialidadesNomes } from '@/hooks/useNomes'
 
@@ -77,6 +77,7 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
     if (!formData.crm?.trim()) newErrors.crm = 'Órgão de classe é obrigatório'
     if (!formData.especialidadeNome) newErrors.especialidadeNome = 'Especialidade é obrigatória'
+    if (!formData.tipoPagamento) newErrors.tipoPagamento = 'Tipo de pagamento é obrigatório'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -101,6 +102,9 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
 
       const payload = {
         ...formData,
+        cpf: unmaskCPF(formData.cpf || ''),
+        telefone: unmaskPhone(formData.telefone || ''),
+        tipoPagamento: formData.tipoPagamento || 'FIXO_POR_CONSULTA',
         especialidade: especialidade.nome,
         especialidadeNome: undefined,
         perfil: 'PROFISSIONAL' as const,
@@ -331,6 +335,7 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
             <select
               value={formData.tipoPagamento || 'FIXO_POR_CONSULTA'}
               onChange={(e) => setFormData({ ...formData, tipoPagamento: e.target.value as any })}
+              onBlur={() => handleBlur('tipoPagamento')}
               style={commonStyles.input}
               disabled={isLoading}
             >
@@ -338,6 +343,9 @@ export const ProfissionalForm: React.FC<ProfissionalFormProps> = ({
               <option value="PERCENTUAL_RECEITA">📊 Percentual Receita</option>
               <option value="AMBOS">🔀 Ambos</option>
             </select>
+            {errors.tipoPagamento && touched.tipoPagamento && (
+              <span style={{ ...commonStyles.errorMessage, display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)' }}>⚠️ {errors.tipoPagamento}</span>
+            )}
           </div>
 
           {/* Valor Fixo */}

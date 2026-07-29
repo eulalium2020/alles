@@ -37,7 +37,7 @@ public class PacienteRequest {
     private String sexo;
 
     @NotBlank(message = "Telefone é obrigatório")
-    @Pattern(regexp = "^\\(\\d{2}\\)\\s?9?\\d{4}-\\d{4}$", message = "Telefone deve estar em formato válido")
+    @Pattern(regexp = "^\\d{10,11}$", message = "Telefone deve conter 10 ou 11 dígitos")
     private String telefone;
 
     private String endereco;
@@ -47,7 +47,7 @@ public class PacienteRequest {
     private String cidade;
     private String estado;
     
-    @Pattern(regexp = "^\\d{5}-\\d{3}$", message = "CEP deve estar em formato XXXXX-XXX")
+    @Pattern(regexp = "^\\d{8}$", message = "CEP deve conter 8 dígitos")
     private String cep;
 
     private String alergias;

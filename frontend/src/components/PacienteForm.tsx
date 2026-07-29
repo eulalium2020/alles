@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Paciente } from '@/types'
-import { maskCPF, maskPhone, maskEmail } from '@/utils/inputMasks'
+import { maskCPF, maskPhone, maskEmail, unmaskCPF, unmaskPhone, unmaskValue } from '@/utils/inputMasks'
 import { commonStyles, themeUtils } from '@/styles/theme'
 import { usePlanosNomes } from '@/hooks/useNomes'
 
@@ -92,6 +92,9 @@ export const PacienteForm: React.FC<PacienteFormProps> = ({
 
       const payload = {
         ...formData,
+        cpf: unmaskCPF(formData.cpf || ''),
+        telefone: unmaskPhone(formData.telefone || ''),
+        cep: formData.cep ? unmaskValue(formData.cep) : formData.cep,
         planosSaudeIds,
         planosSaudeNomes: undefined,
         perfil: 'PACIENTE' as const,

@@ -114,7 +114,13 @@ public class ProfissionalService {
         
         Profissional profissional = findById(id);
         validarProfissional(profissionalAtualizado);
-        
+
+        profissional.getUsuario().setNome(profissionalAtualizado.getUsuario().getNome());
+        profissional.getUsuario().setEmail(profissionalAtualizado.getUsuario().getEmail());
+        profissional.getUsuario().setCpf(profissionalAtualizado.getUsuario().getCpf());
+        profissional.getUsuario().setTelefone(profissionalAtualizado.getUsuario().getTelefone());
+        profissional.getUsuario().setAtivo(profissionalAtualizado.getUsuario().getAtivo());
+
         if (profissionalAtualizado.getEspecialidade() != null && profissionalAtualizado.getEspecialidade().getId() != null) {
             Especialidade esp = especialidadeRepository.findById(profissionalAtualizado.getEspecialidade().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Especialidade não encontrada"));
@@ -126,6 +132,7 @@ public class ProfissionalService {
         profissional.setBancoAgencia(profissionalAtualizado.getBancoAgencia());
         profissional.setBancoConta(profissionalAtualizado.getBancoConta());
         profissional.setTipoPagamento(profissionalAtualizado.getTipoPagamento());
+        profissional.setValorFixo(profissionalAtualizado.getValorFixo());
         profissional.setValorConsultaParticular(profissionalAtualizado.getValorConsultaParticular());
         profissional.setValorConsultaPlano(profissionalAtualizado.getValorConsultaPlano());
         profissional.setPercentualReceita(profissionalAtualizado.getPercentualReceita());

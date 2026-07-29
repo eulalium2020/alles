@@ -129,7 +129,7 @@ class ProfissionalControllerIntegrationTest {
                                   "nome": "Dr. Novo",
                                   "email": "novo@alles.com",
                                   "cpf": "12345678901",
-                                  "telefone": "(11) 98888-7777",
+                                  "telefone": "11988887777",
                                   "crm": "123456",
                                   "tipoPagamento": "FIXO_POR_CONSULTA",
                                   "valorFixo": 150.00,

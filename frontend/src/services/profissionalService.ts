@@ -62,7 +62,11 @@ export class ProfissionalService implements IProfissionalService {
       const response = await this.apiClient.get<any>('/profissionais', {
         params: { page, size: pageSize }, // Spring espera "size"
       })
-      return adaptSpringPage(response.data)
+      const pageData = adaptSpringPage<any>(response.data)
+      return {
+        ...pageData,
+        content: pageData.content.map((item: any) => this.normalizeProfissional(item)),
+      }
     } catch (error) {
       throw this.handleError(error)
     }
@@ -73,8 +77,8 @@ export class ProfissionalService implements IProfissionalService {
    */
   async getById(id: number): Promise<Profissional> {
     try {
-      const response = await this.apiClient.get<Profissional>(`/profissionais/${id}`)
-      return response.data
+      const response = await this.apiClient.get<any>(`/profissionais/${id}`)
+      return this.normalizeProfissional(response.data)
     } catch (error) {
       throw this.handleError(error)
     }
@@ -85,8 +89,8 @@ export class ProfissionalService implements IProfissionalService {
    */
   async create(data: Omit<Profissional, 'id' | 'criadoEm' | 'atualizadoEm'>): Promise<Profissional> {
     try {
-      const response = await this.apiClient.post<Profissional>('/profissionais', data)
-      return response.data
+      const response = await this.apiClient.post<any>('/profissionais', data)
+      return this.normalizeProfissional(response.data)
     } catch (error) {
       throw this.handleError(error)
     }
@@ -97,11 +101,23 @@ export class ProfissionalService implements IProfissionalService {
    */
   async update(id: number, data: Partial<Profissional>): Promise<Profissional> {
     try {
-      const response = await this.apiClient.put<Profissional>(`/profissionais/${id}`, data)
-      return response.data
+      const response = await this.apiClient.put<any>(`/profissionais/${id}`, data)
+      return this.normalizeProfissional(response.data)
     } catch (error) {
       throw this.handleError(error)
     }
+  }
+
+  private normalizeProfissional(data: any): Profissional {
+    const usuario = data?.usuario || {}
+
+    return {
+      ...data,
+      nome: data?.nome || usuario?.nome || usuario?.email || '',
+      email: data?.email || usuario?.email || '',
+      cpf: data?.cpf || usuario?.cpf || '',
+      telefone: data?.telefone || usuario?.telefone || '',
+    } as Profissional
   }
 
   /**

@@ -125,7 +125,13 @@ public class PacienteService {
         
         Paciente paciente = findById(id);
         validarPaciente(pacienteAtualizado);
-        
+
+        paciente.getUsuario().setNome(pacienteAtualizado.getUsuario().getNome());
+        paciente.getUsuario().setEmail(pacienteAtualizado.getUsuario().getEmail());
+        paciente.getUsuario().setCpf(pacienteAtualizado.getUsuario().getCpf());
+        paciente.getUsuario().setTelefone(pacienteAtualizado.getUsuario().getTelefone());
+        paciente.getUsuario().setAtivo(pacienteAtualizado.getUsuario().getAtivo());
+
         paciente.setCpf(pacienteAtualizado.getCpf());
         paciente.setDataNascimento(pacienteAtualizado.getDataNascimento());
         paciente.setSexo(pacienteAtualizado.getSexo());
@@ -139,6 +145,7 @@ public class PacienteService {
         paciente.setCep(pacienteAtualizado.getCep());
         paciente.setAlergias(pacienteAtualizado.getAlergias());
         paciente.setAntecedenteMedicos(pacienteAtualizado.getAntecedenteMedicos());
+        paciente.setAtivo(pacienteAtualizado.getAtivo());
         
         Paciente updated = pacienteRepository.save(paciente);
         log.info("Paciente atualizado com sucesso: ID {}", updated.getId());

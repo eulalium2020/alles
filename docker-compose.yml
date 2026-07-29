@@ -5,10 +5,10 @@ services:
     image: mysql:8.0.36
     container_name: alles-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: alles
-      MYSQL_USER: alles_user
-      MYSQL_PASSWORD: alles_pass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
@@ -16,11 +16,31 @@ services:
       - mysql_data:/var/lib/mysql
       - ./backend/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
       timeout: 20s
-      retries: 10
+      retries: 5
     networks:
       - alles-network
+
+#  app:
+#      build:
+#        context: .
+#        dockerfile: Dockerfile
+#      container_name: spring-app
+#      restart: always
+#      depends_on:
+#        mysql:
+#          condition: service_healthy
+#      environment:
+#        SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+#        SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+#        SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+#        SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      ports:
+#        - "8080:8080"
+#      networks:
+#        - alles-network
 
   phpmyadmin:
     image: phpmyadmin:latest

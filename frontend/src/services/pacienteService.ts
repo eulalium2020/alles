@@ -62,7 +62,11 @@ export class PacienteService implements IPacienteService {
       const response = await this.apiClient.get<any>('/pacientes', {
         params: { page, size: pageSize }, // Spring espera "size"
       })
-      return adaptSpringPage(response.data)
+      const pageData = adaptSpringPage<any>(response.data)
+      return {
+        ...pageData,
+        content: pageData.content.map((item: any) => this.normalizePaciente(item)),
+      }
     } catch (error) {
       throw this.handleError(error)
     }
@@ -73,8 +77,8 @@ export class PacienteService implements IPacienteService {
    */
   async getById(id: number): Promise<Paciente> {
     try {
-      const response = await this.apiClient.get<Paciente>(`/pacientes/${id}`)
-      return response.data
+      const response = await this.apiClient.get<any>(`/pacientes/${id}`)
+      return this.normalizePaciente(response.data)
     } catch (error) {
       throw this.handleError(error)
     }
@@ -85,8 +89,8 @@ export class PacienteService implements IPacienteService {
    */
   async create(data: Omit<Paciente, 'id' | 'criadoEm' | 'atualizadoEm'>): Promise<Paciente> {
     try {
-      const response = await this.apiClient.post<Paciente>('/pacientes', data)
-      return response.data
+      const response = await this.apiClient.post<any>('/pacientes', data)
+      return this.normalizePaciente(response.data)
     } catch (error) {
       throw this.handleError(error)
     }
@@ -97,11 +101,23 @@ export class PacienteService implements IPacienteService {
    */
   async update(id: number, data: Partial<Paciente>): Promise<Paciente> {
     try {
-      const response = await this.apiClient.put<Paciente>(`/pacientes/${id}`, data)
-      return response.data
+      const response = await this.apiClient.put<any>(`/pacientes/${id}`, data)
+      return this.normalizePaciente(response.data)
     } catch (error) {
       throw this.handleError(error)
     }
+  }
+
+  private normalizePaciente(data: any): Paciente {
+    const usuario = data?.usuario || {}
+
+    return {
+      ...data,
+      nome: data?.nome || usuario?.nome || usuario?.email || '',
+      email: data?.email || usuario?.email || '',
+      cpf: data?.cpf || usuario?.cpf || '',
+      telefone: data?.telefone || usuario?.telefone || '',
+    } as Paciente
   }
 
   /**

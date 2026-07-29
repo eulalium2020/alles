@@ -2,7 +2,11 @@ package com.clinica.alles.presentation.controller;
 
 import com.clinica.alles.application.service.ProfissionalService;
 import com.clinica.alles.common.dto.ProfissionalRequest;
+import com.clinica.alles.common.exception.ValidationException;
+import com.clinica.alles.domain.especialidade.Especialidade;
 import com.clinica.alles.domain.profissional.Profissional;
+import com.clinica.alles.domain.profissional.TipoPagamento;
+import com.clinica.alles.domain.usuario.Perfil;
 import com.clinica.alles.domain.usuario.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -71,7 +76,12 @@ public class ProfissionalController {
         log.debug("Listando nomes de profissionais ativos");
         List<Map<String, Object>> profissionais = profissionalService.findAllAtivos().stream()
                 .map(profissional -> {
-                    String nome = profissional.getUsuario() != null ? profissional.getUsuario().getEmail() : "";
+                    String nome = "";
+                    if (profissional.getUsuario() != null) {
+                        nome = profissional.getUsuario().getNome() != null
+                                ? profissional.getUsuario().getNome()
+                                : profissional.getUsuario().getEmail();
+                    }
                     String crm = profissional.getCrm();
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("id", profissional.getId());
@@ -135,20 +145,8 @@ public class ProfissionalController {
     })
     public ResponseEntity<Profissional> criar(@Valid @RequestBody ProfissionalRequest request) {
         log.info("Criando novo profissional: {}", request.getEmail());
-        
-        Profissional profissional = new Profissional();
-        Usuario usuario = new Usuario();
-        usuario.setEmail(request.getEmail());
-        profissional.setUsuario(usuario);
-        profissional.setCrm(request.getCrm());
-        profissional.setCrefito(request.getCrefito());
-        profissional.setBancoAgencia(request.getBancoAgencia());
-        profissional.setBancoConta(request.getBancoConta());
-        profissional.setValorConsultaParticular(request.getValorConsultaParticular());
-        profissional.setValorConsultaPlano(request.getValorConsultaPlano());
-        profissional.setPercentualReceita(request.getPercentualReceita());
-        profissional.setDescontoClinicaPercentual(request.getDescontoClinicaPercentual());
-        
+
+        Profissional profissional = mapRequestToProfissional(request);
         Profissional criado = profissionalService.create(profissional);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
@@ -173,22 +171,54 @@ public class ProfissionalController {
             @PathVariable Long id,
             @Valid @RequestBody ProfissionalRequest request) {
         log.info("Atualizando profissional com ID: {}", id);
-        
+
+        Profissional profissional = mapRequestToProfissional(request);
+        Profissional atualizado = profissionalService.update(id, profissional);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    private Profissional mapRequestToProfissional(ProfissionalRequest request) {
         Profissional profissional = new Profissional();
         Usuario usuario = new Usuario();
+        usuario.setNome(request.getNome());
         usuario.setEmail(request.getEmail());
+        usuario.setCpf(request.getCpf());
+        usuario.setTelefone(request.getTelefone());
+        usuario.setPerfil(Perfil.PROFISSIONAL);
+        usuario.setAtivo(request.isAtivo());
         profissional.setUsuario(usuario);
+
         profissional.setCrm(request.getCrm());
         profissional.setCrefito(request.getCrefito());
         profissional.setBancoAgencia(request.getBancoAgencia());
         profissional.setBancoConta(request.getBancoConta());
+        profissional.setTipoPagamento(parseTipoPagamento(request.getTipoPagamento()));
+        profissional.setValorFixo(request.getValorFixo());
         profissional.setValorConsultaParticular(request.getValorConsultaParticular());
         profissional.setValorConsultaPlano(request.getValorConsultaPlano());
         profissional.setPercentualReceita(request.getPercentualReceita());
         profissional.setDescontoClinicaPercentual(request.getDescontoClinicaPercentual());
-        
-        Profissional atualizado = profissionalService.update(id, profissional);
-        return ResponseEntity.ok(atualizado);
+        profissional.setHorariosAtendimento(request.getHorariosAtendimento());
+        profissional.setAtivo(request.isAtivo());
+
+        if (request.getEspecialidadeId() != null) {
+            Especialidade especialidade = new Especialidade();
+            especialidade.setId(request.getEspecialidadeId());
+            profissional.setEspecialidade(especialidade);
+        }
+
+        return profissional;
+    }
+
+    private TipoPagamento parseTipoPagamento(String tipoPagamento) {
+        if (tipoPagamento == null || tipoPagamento.isBlank()) {
+            throw new ValidationException("Tipo de pagamento é obrigatório");
+        }
+        try {
+            return TipoPagamento.valueOf(tipoPagamento.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new ValidationException("Tipo de pagamento inválido: " + tipoPagamento);
+        }
     }
 
     /**

@@ -28,7 +28,7 @@ public class ProfissionalRequest {
     private String cpf;
 
     @NotBlank(message = "Telefone é obrigatório")
-    @Pattern(regexp = "^\\(\\d{2}\\)\\s?9?\\d{4}-\\d{4}$", message = "Telefone deve estar em formato válido")
+    @Pattern(regexp = "^\\d{10,11}$", message = "Telefone deve conter 10 ou 11 dígitos")
     private String telefone;
 
     @NotBlank(message = "Órgão de classe é obrigatório")

@@ -4,6 +4,7 @@ import com.clinica.alles.application.service.PacienteService;
 import com.clinica.alles.common.dto.PacienteRequest;
 import com.clinica.alles.domain.paciente.Paciente;
 import com.clinica.alles.domain.planosasaude.PlanoSaude;
+import com.clinica.alles.domain.usuario.Perfil;
 import com.clinica.alles.domain.usuario.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -73,7 +74,12 @@ public class PacienteController {
         log.debug("Listando nomes de pacientes ativos");
         List<Map<String, Object>> pacientes = pacienteService.findAllAtivos().stream()
                 .map(paciente -> {
-                    String nome = paciente.getUsuario() != null ? paciente.getUsuario().getEmail() : "";
+                    String nome = "";
+                    if (paciente.getUsuario() != null) {
+                        nome = paciente.getUsuario().getNome() != null
+                                ? paciente.getUsuario().getNome()
+                                : paciente.getUsuario().getEmail();
+                    }
                     String cpf = paciente.getCpf();
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("id", paciente.getId());
@@ -137,25 +143,8 @@ public class PacienteController {
     })
     public ResponseEntity<Paciente> criar(@Valid @RequestBody PacienteRequest request) {
         log.info("Criando novo paciente: {}", request.getEmail());
-        
-        Paciente paciente = new Paciente();
-        Usuario usuario = new Usuario();
-        usuario.setEmail(request.getEmail());
-        paciente.setUsuario(usuario);
-        paciente.setCpf(request.getCpf());
-        paciente.setDataNascimento(request.getDataNascimento());
-        paciente.setSexo(request.getSexo() != null ? request.getSexo().charAt(0) : null);
-        paciente.setTelefone(request.getTelefone());
-        paciente.setEndereco(request.getEndereco());
-        paciente.setNumero(request.getNumero());
-        paciente.setComplemento(request.getComplemento());
-        paciente.setBairro(request.getBairro());
-        paciente.setCidade(request.getCidade());
-        paciente.setEstado(request.getEstado());
-        paciente.setCep(request.getCep());
-        paciente.setAlergias(request.getAlergias());
-        paciente.setAntecedenteMedicos(request.getAntecedenteMedicos());
-        
+
+        Paciente paciente = mapRequestToPaciente(request);
         Paciente criado = pacienteService.create(paciente);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
@@ -180,14 +169,26 @@ public class PacienteController {
             @PathVariable Long id,
             @Valid @RequestBody PacienteRequest request) {
         log.info("Atualizando paciente com ID: {}", id);
-        
+
+        Paciente paciente = mapRequestToPaciente(request);
+        Paciente atualizado = pacienteService.update(id, paciente);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    private Paciente mapRequestToPaciente(PacienteRequest request) {
         Paciente paciente = new Paciente();
         Usuario usuario = new Usuario();
+        usuario.setNome(request.getNome());
         usuario.setEmail(request.getEmail());
+        usuario.setCpf(request.getCpf());
+        usuario.setTelefone(request.getTelefone());
+        usuario.setPerfil(Perfil.PACIENTE);
+        usuario.setAtivo(request.isAtivo());
         paciente.setUsuario(usuario);
+
         paciente.setCpf(request.getCpf());
         paciente.setDataNascimento(request.getDataNascimento());
-        paciente.setSexo(request.getSexo() != null ? request.getSexo().charAt(0) : null);
+        paciente.setSexo(request.getSexo() != null && !request.getSexo().isBlank() ? request.getSexo().charAt(0) : null);
         paciente.setTelefone(request.getTelefone());
         paciente.setEndereco(request.getEndereco());
         paciente.setNumero(request.getNumero());
@@ -198,9 +199,9 @@ public class PacienteController {
         paciente.setCep(request.getCep());
         paciente.setAlergias(request.getAlergias());
         paciente.setAntecedenteMedicos(request.getAntecedenteMedicos());
-        
-        Paciente atualizado = pacienteService.update(id, paciente);
-        return ResponseEntity.ok(atualizado);
+        paciente.setAtivo(request.isAtivo());
+
+        return paciente;
     }
 
     /**

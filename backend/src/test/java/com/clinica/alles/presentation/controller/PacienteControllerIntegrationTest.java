@@ -132,8 +132,8 @@ class PacienteControllerIntegrationTest {
                                   "cpf": "12345678901",
                                   "dataNascimento": "1990-05-20",
                                   "sexo": "F",
-                                  "telefone": "(11) 98888-7777",
-                                  "cep": "01234-567"
+                                  "telefone": "11988887777",
+                                  "cep": "01234567"
                                 }
                                 """))
                 .andExpect(status().isCreated())
