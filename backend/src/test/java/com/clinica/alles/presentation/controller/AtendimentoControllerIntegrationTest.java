@@ -74,7 +74,8 @@ class AtendimentoControllerIntegrationTest {
         atendimento.setId(20L);
         atendimento.setDataHora(LocalDateTime.of(2026, 7, 20, 10, 0));
 
-        when(atendimentoService.agendar(anyLong(), anyLong(), any(LocalDateTime.class))).thenReturn(atendimento);
+        when(atendimentoService.agendar(anyLong(), anyLong(), any(LocalDateTime.class), any(), any(), any()))
+                .thenReturn(atendimento);
 
         mockMvc.perform(post("/api/atendimentos/agendar")
                         .contentType(MediaType.APPLICATION_JSON)

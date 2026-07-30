@@ -30,6 +30,20 @@ public interface IAtendimentoRepository extends JpaRepository<Atendimento, Long>
     List<Atendimento> findByProfissionalId(Long profissionalId);
 
     /**
+     * Remove todos os atendimentos de um paciente.
+     *
+     * @param pacienteId o ID do paciente
+     */
+    void deleteByPacienteId(Long pacienteId);
+
+    /**
+     * Remove todos os atendimentos de um profissional.
+     *
+     * @param profissionalId o ID do profissional
+     */
+    void deleteByProfissionalId(Long profissionalId);
+
+    /**
      * Busca atendimentos em um período de tempo.
      *
      * @param dataHoraInicio data inicial

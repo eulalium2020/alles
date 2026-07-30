@@ -6,6 +6,7 @@ import com.clinica.alles.domain.paciente.Paciente;
 import com.clinica.alles.domain.planosasaude.PlanoSaude;
 import com.clinica.alles.domain.usuario.Perfil;
 import com.clinica.alles.domain.usuario.Usuario;
+import com.clinica.alles.infrastructure.persistence.IAtendimentoRepository;
 import com.clinica.alles.infrastructure.persistence.IPacienteRepository;
 import com.clinica.alles.infrastructure.persistence.IPlanoSaudeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class PacienteServiceTest {
 
     @Mock
     private IPlanoSaudeRepository planoSaudeRepository;
+
+    @Mock
+    private IAtendimentoRepository atendimentoRepository;
 
     @InjectMocks
     private PacienteService pacienteService;
@@ -175,14 +179,14 @@ class PacienteServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete patient (soft delete)")
+    @DisplayName("Should delete patient permanently")
     void testDelete() {
-        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
-        when(pacienteRepository.save(any(Paciente.class))).thenReturn(paciente);
+        when(pacienteRepository.existsById(1L)).thenReturn(true);
 
         pacienteService.delete(1L);
 
-        verify(pacienteRepository, times(1)).save(any(Paciente.class));
+        verify(atendimentoRepository, times(1)).deleteByPacienteId(1L);
+        verify(pacienteRepository, times(1)).deleteById(1L);
     }
 
     @Test

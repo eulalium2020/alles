@@ -4,6 +4,7 @@ import com.clinica.alles.common.exception.ResourceNotFoundException;
 import com.clinica.alles.common.exception.ValidationException;
 import com.clinica.alles.domain.paciente.Paciente;
 import com.clinica.alles.domain.planosasaude.PlanoSaude;
+import com.clinica.alles.infrastructure.persistence.IAtendimentoRepository;
 import com.clinica.alles.infrastructure.persistence.IPacienteRepository;
 import com.clinica.alles.infrastructure.persistence.IPlanoSaudeRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class PacienteService {
 
     private final IPacienteRepository pacienteRepository;
     private final IPlanoSaudeRepository planoSaudeRepository;
+    private final IAtendimentoRepository atendimentoRepository;
 
     /**
      * Busca todos os pacientes com paginação.
@@ -153,7 +155,7 @@ public class PacienteService {
     }
 
     /**
-     * Deleta um paciente (soft delete).
+     * Deleta um paciente do banco.
      *
      * @param id o ID do paciente
      * @throws ResourceNotFoundException se não encontrar
@@ -161,12 +163,15 @@ public class PacienteService {
     @Transactional
     public void delete(Long id) {
         log.info("Deletando paciente: {}", id);
-        
-        Paciente paciente = findById(id);
-        paciente.setAtivo(false);
-        pacienteRepository.save(paciente);
-        
-        log.info("Paciente deletado com sucesso: ID {}", id);
+
+        if (!pacienteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Paciente não encontrado com ID: " + id);
+        }
+
+        atendimentoRepository.deleteByPacienteId(id);
+        pacienteRepository.deleteById(id);
+
+        log.info("Paciente removido definitivamente com sucesso: ID {}", id);
     }
 
     @Transactional

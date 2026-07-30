@@ -24,6 +24,13 @@ public interface IPagamentoRepository extends JpaRepository<Pagamento, Long> {
     List<Pagamento> findByProfissionalId(Long profissionalId);
 
     /**
+     * Remove todos os pagamentos de um profissional.
+     *
+     * @param profissionalId o ID do profissional
+     */
+    void deleteByProfissionalId(Long profissionalId);
+
+    /**
      * Busca pagamentos de um profissional com status específico.
      *
      * @param profissionalId o ID do profissional

@@ -7,7 +7,9 @@ import com.clinica.alles.domain.profissional.Profissional;
 import com.clinica.alles.domain.profissional.TipoPagamento;
 import com.clinica.alles.domain.usuario.Perfil;
 import com.clinica.alles.domain.usuario.Usuario;
+import com.clinica.alles.infrastructure.persistence.IAtendimentoRepository;
 import com.clinica.alles.infrastructure.persistence.IEspecialidadeRepository;
+import com.clinica.alles.infrastructure.persistence.IPagamentoRepository;
 import com.clinica.alles.infrastructure.persistence.IProfissionalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +42,12 @@ class ProfissionalServiceTest {
 
     @Mock
     private IEspecialidadeRepository especialidadeRepository;
+
+    @Mock
+    private IAtendimentoRepository atendimentoRepository;
+
+    @Mock
+    private IPagamentoRepository pagamentoRepository;
 
     @InjectMocks
     private ProfissionalService profissionalService;
@@ -175,13 +183,14 @@ class ProfissionalServiceTest {
     }
 
     @Test
-    @DisplayName("Should delete professional (soft delete)")
+    @DisplayName("Should delete professional permanently")
     void testDelete() {
-        when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
-        when(profissionalRepository.save(any(Profissional.class))).thenReturn(profissional);
+        when(profissionalRepository.existsById(1L)).thenReturn(true);
 
         profissionalService.delete(1L);
 
-        verify(profissionalRepository, times(1)).save(any(Profissional.class));
+        verify(pagamentoRepository, times(1)).deleteByProfissionalId(1L);
+        verify(atendimentoRepository, times(1)).deleteByProfissionalId(1L);
+        verify(profissionalRepository, times(1)).deleteById(1L);
     }
 }

@@ -25,6 +25,12 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class AtendimentoService {
+    private static final String TIPO_PRESENCIAL = "PRESENCIAL";
+    private static final String TIPO_TELEMEDICINA = "TELEMEDICINA";
+    private static final String STATUS_AGENDADO = "AGENDADO";
+    private static final String STATUS_REALIZADO = "REALIZADO";
+    private static final String STATUS_CANCELADO = "CANCELADO";
+    private static final String STATUS_NAO_COMPARECEU = "NAO_COMPARECEU";
 
     private final IAtendimentoRepository atendimentoRepository;
     private final IProfissionalRepository profissionalRepository;
@@ -65,7 +71,7 @@ public class AtendimentoService {
      * @throws ValidationException se validações falharem
      */
     @Transactional
-    public Atendimento agendar(Long profId, Long pacId, LocalDateTime dataHora) {
+    public Atendimento agendar(Long profId, Long pacId, LocalDateTime dataHora, String tipoAtendimento, String status, String anotacoes) {
         log.info("Agendando atendimento: profissional {}, paciente {}, data {}", profId, pacId, dataHora);
         
         if (dataHora == null || dataHora.isBefore(LocalDateTime.now())) {
@@ -94,6 +100,9 @@ public class AtendimentoService {
         atendimento.setProfissional(profissional);
         atendimento.setPaciente(paciente);
         atendimento.setDataHora(dataHora);
+        atendimento.setTipoAtendimento(normalizeTipoAtendimento(tipoAtendimento));
+        atendimento.setStatus(normalizeStatus(status));
+        atendimento.setAnotacoes(anotacoes);
         
         Atendimento saved = atendimentoRepository.save(atendimento);
         log.info("Atendimento agendado com sucesso: ID {}", saved.getId());
@@ -114,6 +123,8 @@ public class AtendimentoService {
         
         Atendimento atendimento = findById(id);
         atendimento.setDataFim(LocalDateTime.now());
+        atendimento.setStatus(STATUS_REALIZADO);
+        atendimento.setAnotacoes(anotacoes);
         atendimento.setNotasConsulta(anotacoes);
         
         Atendimento updated = atendimentoRepository.save(atendimento);
@@ -139,6 +150,8 @@ public class AtendimentoService {
             throw new ValidationException("Não é possível cancelar um atendimento que já foi realizado");
         }
         
+        atendimento.setStatus(STATUS_CANCELADO);
+        atendimento.setAnotacoes(motivo);
         atendimento.setDiagnostico("[CANCELADO] " + (motivo != null ? motivo : "Sem motivo especificado"));
         
         Atendimento updated = atendimentoRepository.save(atendimento);
@@ -171,7 +184,7 @@ public class AtendimentoService {
      * @return o atendimento atualizado
      */
     @Transactional
-    public Atendimento update(Long id, Long profId, Long pacId, LocalDateTime dataHora) {
+    public Atendimento update(Long id, Long profId, Long pacId, LocalDateTime dataHora, String tipoAtendimento, String status, String anotacoes) {
         log.info("Atualizando atendimento: {}", id);
 
         Atendimento atendimento = findById(id);
@@ -202,6 +215,24 @@ public class AtendimentoService {
             atendimento.setDataHora(dataHora);
         }
 
+        if (tipoAtendimento != null) {
+            atendimento.setTipoAtendimento(normalizeTipoAtendimento(tipoAtendimento));
+        }
+
+        if (status != null) {
+            String normalizedStatus = normalizeStatus(status);
+            atendimento.setStatus(normalizedStatus);
+            if (STATUS_REALIZADO.equals(normalizedStatus) && atendimento.getDataFim() == null) {
+                atendimento.setDataFim(LocalDateTime.now());
+            } else if (STATUS_AGENDADO.equals(normalizedStatus)) {
+                atendimento.setDataFim(null);
+            }
+        }
+
+        if (anotacoes != null) {
+            atendimento.setAnotacoes(anotacoes);
+        }
+
         Atendimento updated = atendimentoRepository.save(atendimento);
         log.info("Atendimento atualizado com sucesso: ID {}", updated.getId());
         return updated;
@@ -226,5 +257,34 @@ public class AtendimentoService {
         return atendimentosProfissional.stream()
                 .filter(a -> a.getDataHora() != null && a.getDataFim() == null)
                 .noneMatch(a -> !a.getDataHora().isBefore(inicioJanela) && !a.getDataHora().isAfter(fimJanela));
+    }
+
+    private String normalizeTipoAtendimento(String tipoAtendimento) {
+        if (tipoAtendimento == null || tipoAtendimento.isBlank()) {
+            return TIPO_PRESENCIAL;
+        }
+
+        String normalized = tipoAtendimento.trim().toUpperCase();
+        if (!TIPO_PRESENCIAL.equals(normalized) && !TIPO_TELEMEDICINA.equals(normalized)) {
+            throw new ValidationException("Tipo de atendimento inválido: " + tipoAtendimento);
+        }
+
+        return normalized;
+    }
+
+    private String normalizeStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return STATUS_AGENDADO;
+        }
+
+        String normalized = status.trim().toUpperCase();
+        if (!STATUS_AGENDADO.equals(normalized)
+                && !STATUS_REALIZADO.equals(normalized)
+                && !STATUS_CANCELADO.equals(normalized)
+                && !STATUS_NAO_COMPARECEU.equals(normalized)) {
+            throw new ValidationException("Status de atendimento inválido: " + status);
+        }
+
+        return normalized;
     }
 }

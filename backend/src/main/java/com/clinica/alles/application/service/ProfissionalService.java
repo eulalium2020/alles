@@ -5,7 +5,9 @@ import com.clinica.alles.common.exception.ValidationException;
 import com.clinica.alles.domain.especialidade.Especialidade;
 import com.clinica.alles.domain.profissional.Profissional;
 import com.clinica.alles.domain.profissional.TipoPagamento;
+import com.clinica.alles.infrastructure.persistence.IAtendimentoRepository;
 import com.clinica.alles.infrastructure.persistence.IEspecialidadeRepository;
+import com.clinica.alles.infrastructure.persistence.IPagamentoRepository;
 import com.clinica.alles.infrastructure.persistence.IProfissionalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,8 @@ public class ProfissionalService {
 
     private final IProfissionalRepository profissionalRepository;
     private final IEspecialidadeRepository especialidadeRepository;
+    private final IAtendimentoRepository atendimentoRepository;
+    private final IPagamentoRepository pagamentoRepository;
 
     /**
      * Busca todos os profissionais com paginação.
@@ -144,7 +148,7 @@ public class ProfissionalService {
     }
 
     /**
-     * Deleta um profissional (soft delete).
+     * Deleta um profissional do banco.
      *
      * @param id o ID do profissional
      * @throws ResourceNotFoundException se não encontrar
@@ -152,12 +156,16 @@ public class ProfissionalService {
     @Transactional
     public void delete(Long id) {
         log.info("Deletando profissional: {}", id);
-        
-        Profissional profissional = findById(id);
-        profissional.setAtivo(false);
-        profissionalRepository.save(profissional);
-        
-        log.info("Profissional deletado com sucesso: ID {}", id);
+
+        if (!profissionalRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Profissional não encontrado com ID: " + id);
+        }
+
+        pagamentoRepository.deleteByProfissionalId(id);
+        atendimentoRepository.deleteByProfissionalId(id);
+        profissionalRepository.deleteById(id);
+
+        log.info("Profissional removido definitivamente com sucesso: ID {}", id);
     }
 
     /**

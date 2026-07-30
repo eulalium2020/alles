@@ -110,16 +110,12 @@ class PlanoSaudeServiceTest {
     }
 
     @Test
-    @DisplayName("Should soft delete health plan")
-    void shouldSoftDelete() {
-        PlanoSaude plano = new PlanoSaude();
-        plano.setId(1L);
-        plano.setNome("Plano A");
-        plano.setAtivo(true);
-        when(planoSaudeRepository.findById(1L)).thenReturn(Optional.of(plano));
+    @DisplayName("Should delete health plan permanently")
+    void shouldDelete() {
+        when(planoSaudeRepository.existsById(1L)).thenReturn(true);
 
         planoSaudeService.delete(1L);
 
-        verify(planoSaudeRepository).save(any(PlanoSaude.class));
+        verify(planoSaudeRepository).deleteById(1L);
     }
 }

@@ -71,10 +71,11 @@ public class PlanoSaudeService {
 
     @Transactional
     public void delete(Long id) {
-        PlanoSaude plano = findById(id);
-        plano.setAtivo(false);
-        planoSaudeRepository.save(plano);
-        log.info("Plano de saúde desativado com sucesso: ID {}", id);
+        if (!planoSaudeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Plano de saúde não encontrado com ID: " + id);
+        }
+        planoSaudeRepository.deleteById(id);
+        log.info("Plano de saúde removido definitivamente com sucesso: ID {}", id);
     }
 
     private void validarPlano(PlanoSaude planoSaude) {

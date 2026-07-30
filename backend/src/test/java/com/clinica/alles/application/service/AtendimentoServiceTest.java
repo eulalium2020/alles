@@ -114,7 +114,7 @@ class AtendimentoServiceTest {
         when(atendimentoRepository.findByProfissionalId(1L)).thenReturn(Collections.emptyList());
         when(atendimentoRepository.save(any(Atendimento.class))).thenReturn(atendimento);
 
-        Atendimento result = atendimentoService.agendar(1L, 1L, dataHora);
+        Atendimento result = atendimentoService.agendar(1L, 1L, dataHora, "PRESENCIAL", "AGENDADO", null);
 
         assertNotNull(result);
         assertEquals(profissional.getId(), result.getProfissional().getId());
@@ -127,7 +127,7 @@ class AtendimentoServiceTest {
         LocalDateTime dataPassed = LocalDateTime.now().minusDays(1);
 
         assertThrows(ValidationException.class, 
-            () -> atendimentoService.agendar(1L, 1L, dataPassed));
+            () -> atendimentoService.agendar(1L, 1L, dataPassed, "PRESENCIAL", "AGENDADO", null));
     }
 
     @Test
@@ -140,7 +140,7 @@ class AtendimentoServiceTest {
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
 
         assertThrows(ValidationException.class, 
-            () -> atendimentoService.agendar(1L, 1L, dataHora));
+            () -> atendimentoService.agendar(1L, 1L, dataHora, "PRESENCIAL", "AGENDADO", null));
     }
 
     @Test
@@ -153,7 +153,7 @@ class AtendimentoServiceTest {
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
 
         assertThrows(ValidationException.class, 
-            () -> atendimentoService.agendar(1L, 1L, dataHora));
+            () -> atendimentoService.agendar(1L, 1L, dataHora, "PRESENCIAL", "AGENDADO", null));
     }
 
     @Test
@@ -167,6 +167,7 @@ class AtendimentoServiceTest {
         Atendimento result = atendimentoService.registrarPresenca(1L, anotacoes);
 
         assertNotNull(result);
+        assertEquals("REALIZADO", result.getStatus());
         verify(atendimentoRepository, times(1)).save(any(Atendimento.class));
     }
 
@@ -181,6 +182,7 @@ class AtendimentoServiceTest {
         Atendimento result = atendimentoService.cancelar(1L, motivo);
 
         assertNotNull(result);
+        assertEquals("CANCELADO", result.getStatus());
         verify(atendimentoRepository, times(1)).save(any(Atendimento.class));
     }
 

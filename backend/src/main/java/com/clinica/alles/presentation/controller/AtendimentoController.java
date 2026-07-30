@@ -103,7 +103,10 @@ public class AtendimentoController {
                 id,
                 request.getProfissionalId(),
                 request.getPacienteId(),
-                request.getDataHora()
+                request.getDataHora(),
+                request.getTipoAtendimento(),
+                request.getStatus(),
+                request.getAnotacoes()
         );
         return ResponseEntity.ok(AtendimentoResponse.fromEntity(atendimento));
     }
@@ -150,7 +153,10 @@ public class AtendimentoController {
         Atendimento atendimento = atendimentoService.agendar(
                 request.getProfissionalId(),
                 request.getPacienteId(),
-                request.getDataHora()
+                request.getDataHora(),
+                request.getTipoAtendimento(),
+                request.getStatus(),
+                request.getAnotacoes()
         );
         
         return ResponseEntity.status(HttpStatus.CREATED).body(AtendimentoResponse.fromEntity(atendimento));

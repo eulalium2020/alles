@@ -97,6 +97,9 @@ export class AtendimentoService implements IAtendimentoService {
         profissionalId: data.profissionalId,
         pacienteId: data.pacienteId,
         dataHora: data.dataHora,
+        tipoAtendimento: data.tipoAtendimento,
+        status: data.status,
+        anotacoes: data.anotacoes,
       })
       return response.data
     } catch (error) {
@@ -115,6 +118,9 @@ export class AtendimentoService implements IAtendimentoService {
           profissionalId: data.profissionalId,
           pacienteId: data.pacienteId,
           dataHora: data.dataHora,
+          tipoAtendimento: data.tipoAtendimento,
+          status: data.status,
+          anotacoes: data.anotacoes,
         },
       )
       return response.data
