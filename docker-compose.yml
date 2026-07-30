@@ -42,20 +42,20 @@ services:
       networks:
         - alles-network
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: alles-phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      PMA_USER: root
-      PMA_PASSWORD: root
-      PMA_DATABASE: alles
-    ports:
-      - "8081:80"
-    depends_on:
-      - mysql
-    networks:
-      - alles-network
+#  phpmyadmin:
+#    image: phpmyadmin:latest
+#    container_name: alles-phpmyadmin
+#    environment:
+#      PMA_HOST: mysql
+#      PMA_USER: root
+#      PMA_PASSWORD: root
+#      PMA_DATABASE: alles
+#    ports:
+#      - "8081:80"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - alles-network
 
 volumes:
   mysql_data:
