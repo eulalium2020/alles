@@ -1,5 +1,10 @@
 /* 👤 Tipos de Usuário */
-export type Perfil = 'ADMIN' | 'PROFISSIONAL' | 'PACIENTE' | 'GERENTE'
+export type Perfil =
+  | 'ADMIN'
+  | 'PROFISSIONAL'
+  | 'PACIENTE'
+  | 'GERENTE'
+  | 'RECEPCIONISTA'
 
 export interface Usuario {
   id: number

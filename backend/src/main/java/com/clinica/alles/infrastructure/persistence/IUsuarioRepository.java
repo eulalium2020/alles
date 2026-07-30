@@ -27,4 +27,12 @@ public interface IUsuarioRepository extends JpaRepository<Usuario, Long> {
      * @return true se existe, false caso contrário
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Verifica se existe um usuário com o CPF informado.
+     *
+     * @param cpf o CPF a verificar
+     * @return true se existe, false caso contrário
+     */
+    boolean existsByCpf(String cpf);
 }

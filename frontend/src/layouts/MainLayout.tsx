@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react'
 import { useUsuario } from '@store/authStore'
+import { useCanAccess } from '@store/authStore'
 import { useAuth } from '@hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
+import { ROLES } from '@constants/api'
 
 interface MainLayoutProps {
   children: ReactNode
@@ -12,8 +14,10 @@ interface MainLayoutProps {
  */
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const usuario = useUsuario()
+  const canAccess = useCanAccess()
   const { logout } = useAuth()
   const navigate = useNavigate()
+  const isAdmin = canAccess([ROLES.ADMIN])
 
   const handleLogout = async () => {
     await logout()
@@ -58,6 +62,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               >
                 Planos de Saúde
               </a>
+              {isAdmin && (
+                <a
+                  href="/usuarios"
+                  className="text-gray-700 hover:text-blue-600 transition"
+                >
+                  Usuários
+                </a>
+              )}
             </nav>
           </div>
 

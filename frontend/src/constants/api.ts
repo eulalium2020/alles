@@ -26,6 +26,7 @@ export const API_CONFIG = {
     },
     PROFISSIONAIS: '/profissionais',
     PACIENTES: '/pacientes',
+    USUARIOS: '/usuarios',
     PLANOS_SAUDE: '/planos-saude',
     ATENDIMENTOS: '/atendimentos',
     PAGAMENTOS: '/pagamentos',
@@ -46,6 +47,7 @@ export const ROLES = {
   PROFISSIONAL: 'PROFISSIONAL',
   PACIENTE: 'PACIENTE',
   GERENTE: 'GERENTE',
+  RECEPCIONISTA: 'RECEPCIONISTA',
 } as const
 
 /* 📊 Pagination */

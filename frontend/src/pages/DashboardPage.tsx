@@ -221,6 +221,7 @@ export const DashboardPage: React.FC = () => {
               <>
                 <QuickLink to="/profissionais" icon="👨‍⚕️" label="Profissionais" />
                 <QuickLink to="/pacientes" icon="👥" label="Pacientes" />
+                <QuickLink to="/usuarios" icon="🔐" label="Usuários" />
                 <QuickLink to="/relatorios" icon="📊" label="Relatórios" />
               </>
             )}
@@ -263,4 +264,3 @@ function QuickLink({ to, icon, label }: { to: string; icon: string; label: strin
     </Link>
   )
 }
-

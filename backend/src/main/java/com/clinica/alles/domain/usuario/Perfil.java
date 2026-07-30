@@ -5,6 +5,7 @@ package com.clinica.alles.domain.usuario;
  */
 public enum Perfil {
     ADMIN("Administrador"),
+    GERENTE("Gerente"),
     PROFISSIONAL("Profissional"),
     PACIENTE("Paciente"),
     RECEPCIONISTA("Recepcionista");

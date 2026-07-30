@@ -11,9 +11,12 @@ import { ProfissionaisPage } from '@pages/ProfissionaisPage'
 import { PacientesPage } from '@pages/PacientesPage'
 import { AtendimentosPage } from '@pages/AtendimentosPage'
 import { PlanosSaudePage } from '@pages/PlanosSaudePage'
+import { UsuariosPage } from '@pages/UsuariosPage'
 import { MainLayout } from './layouts/MainLayout'
 import { ThemeToggle } from '@components/ThemeToggle'
-import { useIsAuthenticated } from '@store/authStore'
+import { useCanAccess, useIsAuthenticated } from '@store/authStore'
+import { ROLES } from '@constants/api'
+import { Perfil } from '@/types'
 import './index.css'
 
 /**
@@ -21,13 +24,19 @@ import './index.css'
  */
 interface ProtectedRouteProps {
   children: React.ReactNode
+  requiredRoles?: Perfil[]
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles }) => {
   const isAuthenticated = useIsAuthenticated()
+  const canAccess = useCanAccess()
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
+  }
+
+  if (requiredRoles && requiredRoles.length > 0 && !canAccess(requiredRoles)) {
+    return <Navigate to="/dashboard" replace />
   }
 
   return <MainLayout>{children}</MainLayout>
@@ -99,6 +108,15 @@ function App() {
           element={
             <ProtectedRoute>
               <PlanosSaudePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute requiredRoles={[ROLES.ADMIN]}>
+              <UsuariosPage />
             </ProtectedRoute>
           }
         />
