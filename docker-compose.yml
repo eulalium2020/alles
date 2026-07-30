@@ -23,24 +23,24 @@ services:
     networks:
       - alles-network
 
-#  app:
-#      build:
-#        context: .
-#        dockerfile: Dockerfile
-#      container_name: spring-app
-#      restart: always
-#      depends_on:
-#        mysql:
-#          condition: service_healthy
-#      environment:
-#        SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-#        SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-#        SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-#        SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#      ports:
-#        - "8080:8080"
-#      networks:
-#        - alles-network
+  app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: spring-app
+      restart: always
+      depends_on:
+        mysql:
+          condition: service_healthy
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+        SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+        SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+        SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      ports:
+        - "8080:8080"
+      networks:
+        - alles-network
 
   phpmyadmin:
     image: phpmyadmin:latest
